@@ -1,0 +1,346 @@
+<!-- Exported using version "7_3_314_4103" on Tuesday, November 12, 2019 2:20:37 PM -->
+<content>
+    <sensor>
+        <name>TanCD Package Performance</name>
+        <what_hash>4008576289</what_hash>
+        <category>TanCD</category>
+        <description>Gets performance of a package.</description>
+        <parameters>
+            <parameter_text>{&quot;parameters&quot;:[{&quot;parameterType&quot;:&quot;com.tanium.components.parameters::TextInputParameter&quot;,&quot;model&quot;:&quot;com.tanium.components.parameters::TextInputParameter&quot;,&quot;key&quot;:&quot;actionid&quot;,&quot;validationExpressions&quot;:[{&quot;expression&quot;:&quot;.*&quot;,&quot;helpString&quot;:&quot;&quot;,&quot;model&quot;:&quot;com.tanium.models::ValidationExpression&quot;,&quot;parameterType&quot;:&quot;com.tanium.models::ValidationExpression&quot;}],&quot;promptText&quot;:&quot;enter action id&quot;,&quot;label&quot;:&quot;action id&quot;}],&quot;model&quot;:&quot;com.tanium.components.parameters::ParametersArray&quot;,&quot;parameterType&quot;:&quot;com.tanium.components.parameters::ParametersArray&quot;}</parameter_text>
+        </parameters>
+        <result_type>1</result_type>
+        <qseconds>600</qseconds>
+        <ignore_case_flag>1</ignore_case_flag>
+        <exclude_from_parse>0</exclude_from_parse>
+        <delimiter>;</delimiter>
+        <hidden_flag>0</hidden_flag>
+        <queries>
+            <sensor_query>
+                <sensor_type>8</sensor_type>
+                <os>0</os>
+                <query>import os.path
+from os import path
+import tanium
+import tanium.sensor_io.sensor_input
+
+tanium_add_results = tanium.results.add
+
+inputs = tanium.sensor_io.sensor_input.SensorInputs()
+inputs.add_param(&#x27;actionid&#x27;, &#x27;||actionid||&#x27;, None)
+actionid = inputs.get_param(&#x27;actionid&#x27;)
+action_dir = tanium.client.common.get_client_dir(&#x27;Downloads&#x27;)
+#actionid = str(&quot;31970&quot;)
+#action_dir = &quot;&#x2F;opt&#x2F;Tanium&#x2F;TaniumClient&#x2F;Downloads&quot;
+
+action_log = action_dir + &quot;&#x2F;Action_&quot; + actionid + &quot;.log&quot;
+
+exitcode=0
+
+if path.exists(action_log):
+  with open(action_log, &#x27;r&#x27;) as fin:
+    row=fin.readline()
+    while row:
+        if &quot;|Package Name: &quot; in row:
+            packagename=row.split(&quot;|Package Name: &quot;)[1].strip()
+        elif &quot;|Action Timing: &quot; in row:
+            runtime=float(row.split(&quot;|Action Timing: &quot;)[1].replace(&#x27;ms&#x27;,&#x27;&#x27;)) &#x2F; 1000.0
+        elif &quot;|Action Exit Code: &quot; in row:
+            exitcode=int(row.split(&quot;|Action Exit Code: &quot;)[1])
+        elif &quot;ActionCommandTimedOut&quot; in row:
+            exitcode=exitcode+1
+        row=fin.readline()
+
+try:
+    tanium_add_results(&#x27;;&#x27;.join([actionid,packagename,str(runtime),str(exitcode)]))
+except:
+    tanium_add_results(&#x27;Unable to get action details&#x27;)
+</query>
+                <signature></signature>
+            </sensor_query>
+            <sensor_query>
+                <sensor_type>8</sensor_type>
+                <os>1</os>
+                <query>import os.path
+from os import path
+import tanium
+import tanium.sensor_io.sensor_input
+
+tanium_add_results = tanium.results.add
+
+inputs = tanium.sensor_io.sensor_input.SensorInputs()
+inputs.add_param(&#x27;actionid&#x27;, &#x27;||actionid||&#x27;, None)
+actionid = inputs.get_param(&#x27;actionid&#x27;)
+action_dir = tanium.client.common.get_client_dir(&#x27;Downloads&#x27;)
+#actionid = str(&quot;31970&quot;)
+#action_dir = &quot;&#x2F;opt&#x2F;Tanium&#x2F;TaniumClient&#x2F;Downloads&quot;
+
+action_log = action_dir + &quot;&#x2F;Action_&quot; + actionid + &quot;.log&quot;
+
+exitcode=0
+
+if path.exists(action_log):
+  with open(action_log, &#x27;r&#x27;) as fin:
+    row=fin.readline()
+    while row:
+        if &quot;|Package Name: &quot; in row:
+            packagename=row.split(&quot;|Package Name: &quot;)[1].strip()
+        elif &quot;|Action Timing: &quot; in row:
+            runtime=float(row.split(&quot;|Action Timing: &quot;)[1].replace(&#x27;ms&#x27;,&#x27;&#x27;)) &#x2F; 1000.0
+        elif &quot;|Action Exit Code: &quot; in row:
+            exitcode=int(row.split(&quot;|Action Exit Code: &quot;)[1])
+        elif &quot;ActionCommandTimedOut&quot; in row:
+            exitcode=exitcode+1
+        row=fin.readline()
+
+try:
+    tanium_add_results(&#x27;;&#x27;.join([actionid,packagename,str(runtime),str(exitcode)]))
+except:
+    tanium_add_results(&#x27;Unable to get action details&#x27;)
+</query>
+                <signature></signature>
+            </sensor_query>
+            <sensor_query>
+                <sensor_type>6</sensor_type>
+                <os>2</os>
+                <query>#!&#x2F;bin&#x2F;sh
+echo &quot;NA on Mac&quot;
+</query>
+                <signature></signature>
+            </sensor_query>
+            <sensor_query>
+                <sensor_type>6</sensor_type>
+                <os>3</os>
+                <query>#!&#x2F;bin&#x2F;sh
+echo &quot;NA on Solaris&quot;
+</query>
+                <signature></signature>
+            </sensor_query>
+            <sensor_query>
+                <sensor_type>6</sensor_type>
+                <os>4</os>
+                <query>#!&#x2F;bin&#x2F;sh
+echo &quot;NA on AIX&quot;
+</query>
+                <signature></signature>
+            </sensor_query>
+        </queries>
+        <columns>
+            <column>
+                <column_index>0</column_index>
+                <name>actionid</name>
+                <hidden_flag>0</hidden_flag>
+                <result_type>3</result_type>
+                <ignore_case_flag>1</ignore_case_flag>
+                <exclude_from_parse>0</exclude_from_parse>
+            </column>
+            <column>
+                <column_index>1</column_index>
+                <name>package name</name>
+                <hidden_flag>0</hidden_flag>
+                <result_type>1</result_type>
+                <ignore_case_flag>1</ignore_case_flag>
+                <exclude_from_parse>0</exclude_from_parse>
+            </column>
+            <column>
+                <column_index>2</column_index>
+                <name>runtime</name>
+                <hidden_flag>0</hidden_flag>
+                <result_type>3</result_type>
+                <ignore_case_flag>1</ignore_case_flag>
+                <exclude_from_parse>0</exclude_from_parse>
+            </column>
+            <column>
+                <column_index>3</column_index>
+                <name>exit code</name>
+                <hidden_flag>0</hidden_flag>
+                <result_type>9</result_type>
+                <ignore_case_flag>1</ignore_case_flag>
+                <exclude_from_parse>0</exclude_from_parse>
+            </column>
+        </columns>
+        <meta_data/>
+        <content_set>
+            <name>Default</name>
+            <description></description>
+            <reserved_name>default</reserved_name>
+            <meta_data/>
+        </content_set>
+    </sensor>
+    <sensor>
+        <name>TanCD Sensor Performance</name>
+        <what_hash>2703301665</what_hash>
+        <category>TanCD</category>
+        <description>Gets sensor performance of a sensor.</description>
+        <parameters>
+            <parameter_text>{&quot;parameters&quot;:[{&quot;parameterType&quot;:&quot;com.tanium.components.parameters::TextInputParameter&quot;,&quot;model&quot;:&quot;com.tanium.components.parameters::TextInputParameter&quot;,&quot;key&quot;:&quot;sensor&quot;,&quot;validationExpressions&quot;:[{&quot;expression&quot;:&quot;.*&quot;,&quot;helpString&quot;:&quot;&quot;,&quot;model&quot;:&quot;com.tanium.models::ValidationExpression&quot;,&quot;parameterType&quot;:&quot;com.tanium.models::ValidationExpression&quot;}],&quot;promptText&quot;:&quot;enter sensor name&quot;}],&quot;model&quot;:&quot;com.tanium.components.parameters::ParametersArray&quot;,&quot;parameterType&quot;:&quot;com.tanium.components.parameters::ParametersArray&quot;}</parameter_text>
+        </parameters>
+        <result_type>1</result_type>
+        <qseconds>600</qseconds>
+        <ignore_case_flag>1</ignore_case_flag>
+        <exclude_from_parse>1</exclude_from_parse>
+        <delimiter>;</delimiter>
+        <hidden_flag>0</hidden_flag>
+        <queries>
+            <sensor_query>
+                <sensor_type>5</sensor_type>
+                <os>0</os>
+                <query>get-content c:\mgctanium\perf.log -ErrorAction SilentlyContinue</query>
+                <signature></signature>
+            </sensor_query>
+            <sensor_query>
+                <sensor_type>6</sensor_type>
+                <os>1</os>
+                <query>#!&#x2F;bin&#x2F;bash
+
+unescape() {
+    # decode everything between 0x20-0x7E except:
+    #0 1 2 3 4 5 6 7 8 9 (0x30-0x39)
+    #A B C D E F G H I J K L M N O P Q R S T U V W X Y Z (0x41-0x5A)
+    #a b c d e f g h i j k l m n o p q r s t u v w x y z (0x61-0x7A)
+    echo &quot;$1&quot; | sed -e &#x27;s&#x2F;%20&#x2F; &#x2F;g&#x27; \
+    -e &#x27;s&#x2F;%21&#x2F;!&#x2F;g&#x27; \
+    -e &#x27;s&#x2F;%22&#x2F;&quot;&#x2F;g&#x27; \
+    -e &#x27;s&#x2F;%23&#x2F;#&#x2F;g&#x27; \
+    -e &#x27;s&#x2F;%24&#x2F;$&#x2F;g&#x27; \
+    -e &#x27;s&#x2F;%25&#x2F;%&#x2F;g&#x27; \
+    -e &#x27;s&#x2F;%26&#x2F;\&amp;&#x2F;g&#x27; \
+    -e &quot;s&#x2F;%27&#x2F;&#x27;&#x2F;g&quot; \
+    -e &#x27;s&#x2F;%28&#x2F;(&#x2F;g&#x27; \
+    -e &#x27;s&#x2F;%29&#x2F;)&#x2F;g&#x27; \
+    -e &#x27;s&#x2F;%2[aA]&#x2F;*&#x2F;g&#x27; \
+    -e &#x27;s&#x2F;%2[bB]&#x2F;+&#x2F;g&#x27; \
+    -e &#x27;s&#x2F;%2[cC]&#x2F;,&#x2F;g&#x27; \
+    -e &#x27;s&#x2F;%2[dD]&#x2F;-&#x2F;g&#x27; \
+    -e &#x27;s&#x2F;%2[eE]&#x2F;.&#x2F;g&#x27; \
+    -e &#x27;s#%2[fF]#&#x2F;#g&#x27; \
+    -e &#x27;s&#x2F;%3[aA]&#x2F;:&#x2F;g&#x27; \
+    -e &#x27;s&#x2F;%3[bB]&#x2F;;&#x2F;g&#x27; \
+    -e &#x27;s&#x2F;%3[cC]&#x2F;&lt;&#x2F;g&#x27; \
+    -e &#x27;s&#x2F;%3[dD]&#x2F;=&#x2F;g&#x27; \
+    -e &#x27;s&#x2F;%3[eE]&#x2F;&gt;&#x2F;g&#x27; \
+    -e &#x27;s&#x2F;%3[fF]&#x2F;?&#x2F;g&#x27; \
+    -e &#x27;s&#x2F;%40&#x2F;@&#x2F;g&#x27; \
+    -e &#x27;s&#x2F;%5[bB]&#x2F;[&#x2F;g&#x27; \
+    -e &#x27;s&#x2F;%5[cC]&#x2F;\\&#x2F;g&#x27; \
+    -e &#x27;s&#x2F;%5[dD]&#x2F;]&#x2F;g&#x27; \
+    -e &#x27;s&#x2F;%5[eE]&#x2F;^&#x2F;g&#x27; \
+    -e &#x27;s&#x2F;%5[fF]&#x2F;_&#x2F;g&#x27; \
+    -e &#x27;s&#x2F;%60&#x2F;`&#x2F;g&#x27; \
+    -e &#x27;s&#x2F;%7[bB]&#x2F;{&#x2F;g&#x27; \
+    -e &#x27;s&#x2F;%7[cC]&#x2F;|&#x2F;g&#x27; \
+    -e &#x27;s&#x2F;%7[dD]&#x2F;}&#x2F;g&#x27; \
+    -e &#x27;s&#x2F;%7[eE]&#x2F;~&#x2F;g&#x27;
+}
+
+sensor=$(unescape &quot;||sensor||&quot;)
+
+#   export sensor_name=&quot;sensor performance&quot;
+#   [ -f &#x2F;opt&#x2F;Tanium&#x2F;TaniumClient&#x2F;perf&#x2F;perf.sh ] &amp;&amp; . &#x2F;opt&#x2F;Tanium&#x2F;TaniumClient&#x2F;perf&#x2F;perf.sh
+
+if [ -f &#x2F;opt&#x2F;Tanium&#x2F;TaniumClient&#x2F;perf&#x2F;perf.log ]
+then
+	cat &#x2F;opt&#x2F;Tanium&#x2F;TaniumClient&#x2F;perf&#x2F;perf.log | grep &quot;$sensor&quot;
+fi
+</query>
+                <signature></signature>
+            </sensor_query>
+            <sensor_query>
+                <sensor_type>6</sensor_type>
+                <os>2</os>
+                <query>#!&#x2F;bin&#x2F;sh
+echo &quot;NA on Mac&quot;
+</query>
+                <signature></signature>
+            </sensor_query>
+            <sensor_query>
+                <sensor_type>6</sensor_type>
+                <os>3</os>
+                <query>#!&#x2F;bin&#x2F;sh
+echo &quot;NA on Solaris&quot;
+</query>
+                <signature></signature>
+            </sensor_query>
+            <sensor_query>
+                <sensor_type>6</sensor_type>
+                <os>4</os>
+                <query>#!&#x2F;bin&#x2F;sh
+echo &quot;NA on AIX&quot;
+</query>
+                <signature></signature>
+            </sensor_query>
+        </queries>
+        <columns>
+            <column>
+                <column_index>0</column_index>
+                <name>date</name>
+                <hidden_flag>0</hidden_flag>
+                <result_type>3</result_type>
+                <ignore_case_flag>1</ignore_case_flag>
+                <exclude_from_parse>0</exclude_from_parse>
+            </column>
+            <column>
+                <column_index>1</column_index>
+                <name>sensor name</name>
+                <hidden_flag>0</hidden_flag>
+                <result_type>1</result_type>
+                <ignore_case_flag>1</ignore_case_flag>
+                <exclude_from_parse>0</exclude_from_parse>
+            </column>
+            <column>
+                <column_index>2</column_index>
+                <name>runtime</name>
+                <hidden_flag>0</hidden_flag>
+                <result_type>3</result_type>
+                <ignore_case_flag>1</ignore_case_flag>
+                <exclude_from_parse>0</exclude_from_parse>
+            </column>
+            <column>
+                <column_index>3</column_index>
+                <name>user time</name>
+                <hidden_flag>0</hidden_flag>
+                <result_type>1</result_type>
+                <ignore_case_flag>1</ignore_case_flag>
+                <exclude_from_parse>0</exclude_from_parse>
+            </column>
+            <column>
+                <column_index>4</column_index>
+                <name>system time</name>
+                <hidden_flag>0</hidden_flag>
+                <result_type>1</result_type>
+                <ignore_case_flag>1</ignore_case_flag>
+                <exclude_from_parse>0</exclude_from_parse>
+            </column>
+            <column>
+                <column_index>5</column_index>
+                <name>user time children</name>
+                <hidden_flag>0</hidden_flag>
+                <result_type>1</result_type>
+                <ignore_case_flag>1</ignore_case_flag>
+                <exclude_from_parse>0</exclude_from_parse>
+            </column>
+            <column>
+                <column_index>6</column_index>
+                <name>system time children</name>
+                <hidden_flag>0</hidden_flag>
+                <result_type>1</result_type>
+                <ignore_case_flag>1</ignore_case_flag>
+                <exclude_from_parse>0</exclude_from_parse>
+            </column>
+            <column>
+                <column_index>7</column_index>
+                <name>exit code</name>
+                <hidden_flag>0</hidden_flag>
+                <result_type>9</result_type>
+                <ignore_case_flag>1</ignore_case_flag>
+                <exclude_from_parse>0</exclude_from_parse>
+            </column>
+        </columns>
+        <meta_data/>
+        <content_set>
+            <name>Default</name>
+            <description></description>
+            <reserved_name>default</reserved_name>
+            <meta_data/>
+        </content_set>
+    </sensor>
+</content>

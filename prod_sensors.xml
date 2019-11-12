@@ -1,0 +1,483 @@
+<!-- Exported using version "7_3_314_4103" on Tuesday, November 12, 2019 2:20:23 PM -->
+<content>
+    <sensor>
+        <name>TanCD Tanium Action Failure</name>
+        <what_hash>1510220215</what_hash>
+        <category>TanCD</category>
+        <description>Provided with an action number as a parameter, this sensor returns True or False based on Exit Code from the action from each client machine that executed the action.</description>
+        <parameters>
+            <parameter_text>{&quot;parameters&quot;:[{&quot;parameterType&quot;:&quot;com.tanium.components.parameters::NumericParameter&quot;,&quot;model&quot;:&quot;com.tanium.components.parameters::NumericParameter&quot;,&quot;key&quot;:&quot;actionNumber&quot;,&quot;label&quot;:&quot;Action ID&quot;}],&quot;model&quot;:&quot;com.tanium.components.parameters::ParametersArray&quot;,&quot;parameterType&quot;:&quot;com.tanium.components.parameters::ParametersArray&quot;}</parameter_text>
+        </parameters>
+        <result_type>1</result_type>
+        <qseconds>900</qseconds>
+        <ignore_case_flag>1</ignore_case_flag>
+        <exclude_from_parse>1</exclude_from_parse>
+        <delimiter>,</delimiter>
+        <hidden_flag>0</hidden_flag>
+        <queries>
+            <sensor_query>
+                <sensor_type>8</sensor_type>
+                <os>0</os>
+                <query>#!&#x2F;usr&#x2F;bin&#x2F;python
+
+import os.path
+from os import path
+import tanium
+import tanium.sensor_io.sensor_input
+
+tanium_add_results = tanium.results.add
+
+inputs = tanium.sensor_io.sensor_input.SensorInputs()
+inputs.add_param(&#x27;actionid&#x27;, &#x27;||actionNumber||&#x27;, None)
+actionid = inputs.get_param(&#x27;actionid&#x27;)
+downloads_dir = tanium.client.common.get_client_dir(&#x27;Downloads&#x27;)
+#sensorname = &quot;Chuck Norris Fact&quot;
+#perf_dir = &quot;&#x2F;opt&#x2F;Tanium&#x2F;TaniumClient&#x2F;Downloads&quot;
+
+action_log = downloads_dir + &quot;&#x2F;Action_&quot; + actionid + &quot;.log&quot;
+
+actionfailure=&quot;True&quot;
+
+#if path.exists(action_log):
+#  with open(action_log, &#x27;r&#x27;) as fin:
+#    row=fin.readline()
+#    while row:
+#      if &quot;Action Exit Code: 0&quot; in row:
+#        actionfailure=&quot;False&quot;
+
+if path.exists(action_log):
+  with open(action_log) as fp:
+    for line in fp:
+      if &quot;Action Exit Code: 0&quot; in line:
+        actionfailure=&quot;False&quot;
+else:
+  actionfailure=&quot;False&quot;
+
+tanium_add_results(actionfailure)
+</query>
+                <signature></signature>
+            </sensor_query>
+            <sensor_query>
+                <sensor_type>6</sensor_type>
+                <os>1</os>
+                <query>#!&#x2F;bin&#x2F;bash
+
+export sensor_name=&quot;TanCD Tanium Action Failure&quot;
+[ -f &#x2F;opt&#x2F;Tanium&#x2F;TaniumClient&#x2F;perf&#x2F;perf.sh ] &amp;&amp; . &#x2F;opt&#x2F;Tanium&#x2F;TaniumClient&#x2F;perf&#x2F;perf.sh
+
+#@INCLUDE=i18n&#x2F;UTF8Decode.sh
+
+#@START_INCLUDES_HERE
+#------------ INCLUDES START - Do not edit between this line and INCLUDE ENDS -----
+#- Begin file: utils&#x2F;settings&#x2F;get_client_dir.sh
+# To include this file, copy&#x2F;paste: INCLUDE=utils&#x2F;settings&#x2F;get_client_dir.sh
+
+get_client_dir() {
+	if [ -n  &quot;$TANIUM_CLIENT_ROOT&quot; ]; then
+		echo &quot;$TANIUM_CLIENT_ROOT&#x2F;&quot;
+	elif [ -f &quot;.&#x2F;TaniumClient&quot; ] &amp;&amp; [ -x &quot;.&#x2F;TaniumClient&quot; ]; then
+			echo &quot;.&#x2F;&quot;
+	elif [ -f &quot;..&#x2F;..&#x2F;TaniumClient&quot; ] &amp;&amp; [ -x &quot;..&#x2F;..&#x2F;TaniumClient&quot; ]; then
+		echo &quot;..&#x2F;..&#x2F;&quot;
+	else
+		OS=$(uname)
+		
+		if [ &quot;$OS&quot; = &quot;Darwin&quot; ]; then
+			BASE=&#x2F;Library
+		else
+			BASE=&#x2F;opt
+		fi
+		
+		if [ -f &quot;$BASE&#x2F;Tanium&#x2F;TaniumClient&#x2F;TaniumClient&quot; ] &amp;&amp; [ -x &quot;$BASE&#x2F;Tanium&#x2F;TaniumClient&#x2F;TaniumClient&quot; ]; then
+			echo &quot;$BASE&#x2F;Tanium&#x2F;TaniumClient&#x2F;&quot;
+		else
+			echo &quot;Can not find Tanium Client directory&quot;
+			exit 1
+		fi
+	fi
+}
+
+#- End file: utils&#x2F;settings&#x2F;get_client_dir.sh
+#- Begin file: i18n&#x2F;UTF8Decode.sh
+
+# To include this file, copy&#x2F;paste: INCLUDE=i18n&#x2F;UTF8Decode.sh
+
+
+
+utf8decode() {
+	# if we have the Tanium Python Engine available, then use it to convert the parameter
+	TPYTHON_PATH=&quot;$(get_client_dir)python27&#x2F;python&quot;
+
+	if [ -f &quot;$TPYTHON_PATH&quot; ]; then
+		$TPYTHON_PATH -c &quot;from tanium import util; print util.unescape(&#x27;$1&#x27;).encode(&#x27;utf-8&#x27;)&quot;
+	else
+		# No python, resort to old style that we know works everywhere, but only decodes a fixed set
+		# decode everything between 0x20-0x7E except:
+		#0 1 2 3 4 5 6 7 8 9 (0x30-0x39)
+		#A B C D E F G H I J K L M N O P Q R S T U V W X Y Z (0x41-0x5A)
+		#a b c d e f g h i j k l m n o p q r s t u v w x y z (0x61-0x7A)
+		echo &quot;$1&quot; | sed -e &#x27;s&#x2F;%20&#x2F; &#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%21&#x2F;!&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%22&#x2F;&quot;&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%23&#x2F;#&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%24&#x2F;$&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%25&#x2F;%&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%26&#x2F;\&amp;&#x2F;g&#x27; \
+		-e &quot;s&#x2F;%27&#x2F;&#x27;&#x2F;g&quot; \
+		-e &#x27;s&#x2F;%28&#x2F;(&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%29&#x2F;)&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%2[aA]&#x2F;*&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%2[bB]&#x2F;+&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%2[cC]&#x2F;,&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%2[dD]&#x2F;-&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%2[eE]&#x2F;.&#x2F;g&#x27; \
+		-e &#x27;s#%2[fF]#&#x2F;#g&#x27; \
+		-e &#x27;s&#x2F;%3[aA]&#x2F;:&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%3[bB]&#x2F;;&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%3[cC]&#x2F;&lt;&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%3[dD]&#x2F;=&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%3[eE]&#x2F;&gt;&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%3[fF]&#x2F;?&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%40&#x2F;@&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%5[bB]&#x2F;[&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%5[cC]&#x2F;\\&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%5[dD]&#x2F;]&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%5[eE]&#x2F;^&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%5[fF]&#x2F;_&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%60&#x2F;`&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%7[bB]&#x2F;{&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%7[cC]&#x2F;|&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%7[dD]&#x2F;}&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%7[eE]&#x2F;~&#x2F;g&#x27;
+	fi
+}
+
+#- End file: i18n&#x2F;UTF8Decode.sh
+#------------ INCLUDES END - Do not edit above this line and INCLUDE STARTS -----
+
+ACTIONID=$(utf8decode &quot;||actionNumber||&quot;)
+
+if [ -r &quot;Downloads&#x2F;Action_$ACTIONID.log&quot; ]
+then
+	##
+    # if the action exit code is not zero, then assume failure...
+    if [ &quot;$(grep -c &quot;Action Exit Code: 0&quot; &quot;Downloads&#x2F;Action_$ACTIONID.log&quot;)&quot; -eq 0 ]
+    then
+    	if [ &quot;$(grep -c &quot;Action Exit Code&quot; &quot;Downloads&#x2F;Action_$ACTIONID.log&quot;)&quot; -gt 0 ]
+        then
+	    	echo &quot;True&quot;
+        else
+        	if [ &quot;$(grep -c &quot;ActionCommandTimedOut&quot; &quot;Downloads&#x2F;Action_$ACTIONID.log&quot;)&quot; -gt 0 ]
+            then
+            	echo &quot;True&quot;
+            else
+        		echo &quot;False&quot;
+            fi
+        fi
+    else
+    	echo &quot;False&quot;
+    fi
+fi
+</query>
+                <signature></signature>
+            </sensor_query>
+            <sensor_query>
+                <sensor_type>6</sensor_type>
+                <os>2</os>
+                <query>#!&#x2F;bin&#x2F;sh
+echo &quot;NA on Mac&quot;
+</query>
+                <signature></signature>
+            </sensor_query>
+            <sensor_query>
+                <sensor_type>6</sensor_type>
+                <os>3</os>
+                <query>#!&#x2F;bin&#x2F;sh
+echo &quot;NA on Solaris&quot;
+</query>
+                <signature></signature>
+            </sensor_query>
+            <sensor_query>
+                <sensor_type>6</sensor_type>
+                <os>4</os>
+                <query>#!&#x2F;bin&#x2F;sh
+echo &quot;NA on AIX&quot;
+</query>
+                <signature></signature>
+            </sensor_query>
+        </queries>
+        <columns/>
+        <meta_data/>
+        <content_set>
+            <name>Default</name>
+            <description></description>
+            <reserved_name>default</reserved_name>
+            <meta_data/>
+        </content_set>
+    </sensor>
+    <sensor>
+        <name>TanCD Tanium Action Output</name>
+        <what_hash>3255141282</what_hash>
+        <category>TanCD</category>
+        <description>Provided with an action number as a parameter, this sensor returns the last 5 lines of output from the action from each client machine that executed the action.</description>
+        <parameters>
+            <parameter_text>{&quot;parameters&quot;:[{&quot;parameterType&quot;:&quot;com.tanium.components.parameters::NumericParameter&quot;,&quot;model&quot;:&quot;com.tanium.components.parameters::NumericParameter&quot;,&quot;key&quot;:&quot;actionNumber&quot;,&quot;label&quot;:&quot;Action ID&quot;}],&quot;model&quot;:&quot;com.tanium.components.parameters::ParametersArray&quot;,&quot;parameterType&quot;:&quot;com.tanium.components.parameters::ParametersArray&quot;}</parameter_text>
+        </parameters>
+        <result_type>1</result_type>
+        <qseconds>900</qseconds>
+        <ignore_case_flag>1</ignore_case_flag>
+        <exclude_from_parse>1</exclude_from_parse>
+        <delimiter>|</delimiter>
+        <hidden_flag>0</hidden_flag>
+        <queries>
+            <sensor_query>
+                <sensor_type>8</sensor_type>
+                <os>0</os>
+                <query>#!&#x2F;usr&#x2F;bin&#x2F;python
+
+import os.path
+from os import path
+import tanium
+import tanium.sensor_io.sensor_input
+import md5
+
+tanium_add_results = tanium.results.add
+
+inputs = tanium.sensor_io.sensor_input.SensorInputs()
+inputs.add_param(&#x27;actionid&#x27;, &#x27;||actionNumber||&#x27;, None)
+actionid = inputs.get_param(&#x27;actionid&#x27;)
+downloads_dir = tanium.client.common.get_client_dir(&#x27;Downloads&#x27;)
+#sensorname = &quot;Chuck Norris Fact&quot;
+#perf_dir = &quot;&#x2F;opt&#x2F;Tanium&#x2F;TaniumClient&#x2F;Downloads&quot;
+
+#inputs = tanium.sensor_io.sensor_input.SensorInputs()
+#inputs.add_param(&#x27;actionid&#x27;, &#x27;||actionNumber||&#x27;, None)
+#actionid = &quot;116333&quot;
+#downloads_dir = &quot;&#x2F;opt&#x2F;Tanium&#x2F;TaniumClient&#x2F;Downloads&quot;
+#tanium.client.common.get_client_dir(&#x27;Downloads&#x27;)
+#sensorname = &quot;Chuck Norris Fact&quot;
+#perf_dir = &quot;&#x2F;opt&#x2F;Tanium&#x2F;TaniumClient&#x2F;Downloads&quot;
+
+action_log = downloads_dir + &quot;&#x2F;Action_&quot; + actionid + &quot;.log&quot;
+
+cmdout=False
+output=[]
+
+if path.exists(action_log):
+    with open(action_log) as fp:
+        for line in fp:
+            #print line
+            if &quot;CommandLine&quot; in line:
+                cmdout=True
+                continue
+            if cmdout:
+                if &quot;Action Timing&quot; in line:
+                    cmdout=False
+                    continue
+                else:
+                    output.append(line.strip())
+
+output = output[-5:]
+
+outstring=&quot;\n&quot;.join(output)
+
+hash = md5.new(outstring).hexdigest()[0:5]
+
+
+i = 0
+outstring=&quot;&quot;
+while i &lt; len(output):
+    outstring+=hash + &quot;|&quot; + str(i) + &quot;|&quot; + output[i] + &quot;\n&quot;
+    i += 1
+
+
+tanium_add_results(outstring)
+</query>
+                <signature></signature>
+            </sensor_query>
+            <sensor_query>
+                <sensor_type>6</sensor_type>
+                <os>1</os>
+                <query>#!&#x2F;bin&#x2F;bash
+
+export sensor_name=&quot;TanCD Tanium Action Output&quot;
+[ -f &#x2F;opt&#x2F;Tanium&#x2F;TaniumClient&#x2F;perf&#x2F;perf.sh ] &amp;&amp; . &#x2F;opt&#x2F;Tanium&#x2F;TaniumClient&#x2F;perf&#x2F;perf.sh
+
+#@INCLUDE=i18n&#x2F;UTF8Decode.sh
+
+#@START_INCLUDES_HERE
+#------------ INCLUDES START - Do not edit between this line and INCLUDE ENDS -----
+#- Begin file: utils&#x2F;settings&#x2F;get_client_dir.sh
+# To include this file, copy&#x2F;paste: INCLUDE=utils&#x2F;settings&#x2F;get_client_dir.sh
+
+get_client_dir() {
+	if [ -n  &quot;$TANIUM_CLIENT_ROOT&quot; ]; then
+		echo &quot;$TANIUM_CLIENT_ROOT&#x2F;&quot;
+	elif [ -f &quot;.&#x2F;TaniumClient&quot; ] &amp;&amp; [ -x &quot;.&#x2F;TaniumClient&quot; ]; then
+			echo &quot;.&#x2F;&quot;
+	elif [ -f &quot;..&#x2F;..&#x2F;TaniumClient&quot; ] &amp;&amp; [ -x &quot;..&#x2F;..&#x2F;TaniumClient&quot; ]; then
+		echo &quot;..&#x2F;..&#x2F;&quot;
+	else
+		OS=$(uname)
+		
+		if [ &quot;$OS&quot; = &quot;Darwin&quot; ]; then
+			BASE=&#x2F;Library
+		else
+			BASE=&#x2F;opt
+		fi
+		
+		if [ -f &quot;$BASE&#x2F;Tanium&#x2F;TaniumClient&#x2F;TaniumClient&quot; ] &amp;&amp; [ -x &quot;$BASE&#x2F;Tanium&#x2F;TaniumClient&#x2F;TaniumClient&quot; ]; then
+			echo &quot;$BASE&#x2F;Tanium&#x2F;TaniumClient&#x2F;&quot;
+		else
+			echo &quot;Can not find Tanium Client directory&quot;
+			exit 1
+		fi
+	fi
+}
+
+#- End file: utils&#x2F;settings&#x2F;get_client_dir.sh
+#- Begin file: i18n&#x2F;UTF8Decode.sh
+
+# To include this file, copy&#x2F;paste: INCLUDE=i18n&#x2F;UTF8Decode.sh
+
+
+
+utf8decode() {
+	# if we have the Tanium Python Engine available, then use it to convert the parameter
+	TPYTHON_PATH=&quot;$(get_client_dir)python27&#x2F;python&quot;
+
+	if [ -f &quot;$TPYTHON_PATH&quot; ]; then
+		$TPYTHON_PATH -c &quot;from tanium import util; print util.unescape(&#x27;$1&#x27;).encode(&#x27;utf-8&#x27;)&quot;
+	else
+		# No python, resort to old style that we know works everywhere, but only decodes a fixed set
+		# decode everything between 0x20-0x7E except:
+		#0 1 2 3 4 5 6 7 8 9 (0x30-0x39)
+		#A B C D E F G H I J K L M N O P Q R S T U V W X Y Z (0x41-0x5A)
+		#a b c d e f g h i j k l m n o p q r s t u v w x y z (0x61-0x7A)
+		echo &quot;$1&quot; | sed -e &#x27;s&#x2F;%20&#x2F; &#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%21&#x2F;!&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%22&#x2F;&quot;&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%23&#x2F;#&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%24&#x2F;$&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%25&#x2F;%&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%26&#x2F;\&amp;&#x2F;g&#x27; \
+		-e &quot;s&#x2F;%27&#x2F;&#x27;&#x2F;g&quot; \
+		-e &#x27;s&#x2F;%28&#x2F;(&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%29&#x2F;)&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%2[aA]&#x2F;*&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%2[bB]&#x2F;+&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%2[cC]&#x2F;,&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%2[dD]&#x2F;-&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%2[eE]&#x2F;.&#x2F;g&#x27; \
+		-e &#x27;s#%2[fF]#&#x2F;#g&#x27; \
+		-e &#x27;s&#x2F;%3[aA]&#x2F;:&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%3[bB]&#x2F;;&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%3[cC]&#x2F;&lt;&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%3[dD]&#x2F;=&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%3[eE]&#x2F;&gt;&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%3[fF]&#x2F;?&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%40&#x2F;@&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%5[bB]&#x2F;[&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%5[cC]&#x2F;\\&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%5[dD]&#x2F;]&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%5[eE]&#x2F;^&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%5[fF]&#x2F;_&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%60&#x2F;`&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%7[bB]&#x2F;{&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%7[cC]&#x2F;|&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%7[dD]&#x2F;}&#x2F;g&#x27; \
+		-e &#x27;s&#x2F;%7[eE]&#x2F;~&#x2F;g&#x27;
+	fi
+}
+
+#- End file: i18n&#x2F;UTF8Decode.sh
+#------------ INCLUDES END - Do not edit above this line and INCLUDE STARTS -----
+
+ACTIONID=$(utf8decode &quot;||actionNumber||&quot;)
+
+if [ -r &quot;Downloads&#x2F;Action_$ACTIONID.log&quot; ]
+then
+	year=&quot;$(date +%Y)&quot;
+    output=&quot;$(grep -v &quot;^${year}-&quot; &quot;Downloads&#x2F;Action_$ACTIONID.log&quot; | tail -n 5)&quot;
+    if [ &quot;$output&quot;empty = &quot;empty&quot; ]
+    then
+    	if [ &quot;$(cat &quot;Downloads&#x2F;Action_$ACTIONID.log&quot; | grep -c ActionCommandTimedOut)&quot; -gt 0 ]
+        then
+        	output=&quot;Action Command Timed Out&quot;
+        else
+    		output=&quot;No output&quot;
+        fi
+    fi
+    ##
+    # taking only the first 5 characters of an md5sum increases the chances of collision
+    # but, keeps the output more concice and easier to read.
+    #  TODO: see if there is a way to have the tanium client create an FNV hash for this
+    hash=&quot;$(echo &quot;$output&quot; | md5sum  | cut -c1-5)&quot;
+    
+    ##
+    # add line numbers and output 3 fields
+    echo &quot;$output&quot; | awk -v hash=&quot;$hash&quot; &#x27;{print hash &quot;|&quot; NR-1 &quot;|&quot; $0}&#x27;
+fi
+</query>
+                <signature></signature>
+            </sensor_query>
+            <sensor_query>
+                <sensor_type>6</sensor_type>
+                <os>2</os>
+                <query>#!&#x2F;bin&#x2F;sh
+echo &quot;NA on Mac&quot;
+</query>
+                <signature></signature>
+            </sensor_query>
+            <sensor_query>
+                <sensor_type>6</sensor_type>
+                <os>3</os>
+                <query>#!&#x2F;bin&#x2F;sh
+echo &quot;NA on Solaris&quot;
+</query>
+                <signature></signature>
+            </sensor_query>
+            <sensor_query>
+                <sensor_type>6</sensor_type>
+                <os>4</os>
+                <query>#!&#x2F;bin&#x2F;sh
+echo &quot;NA on AIX&quot;
+</query>
+                <signature></signature>
+            </sensor_query>
+        </queries>
+        <columns>
+            <column>
+                <column_index>0</column_index>
+                <name>hash</name>
+                <hidden_flag>0</hidden_flag>
+                <result_type>1</result_type>
+                <ignore_case_flag>1</ignore_case_flag>
+                <exclude_from_parse>0</exclude_from_parse>
+            </column>
+            <column>
+                <column_index>1</column_index>
+                <name>linenum</name>
+                <hidden_flag>0</hidden_flag>
+                <result_type>9</result_type>
+                <ignore_case_flag>1</ignore_case_flag>
+                <exclude_from_parse>0</exclude_from_parse>
+            </column>
+            <column>
+                <column_index>2</column_index>
+                <name>output</name>
+                <hidden_flag>0</hidden_flag>
+                <result_type>1</result_type>
+                <ignore_case_flag>1</ignore_case_flag>
+                <exclude_from_parse>0</exclude_from_parse>
+            </column>
+        </columns>
+        <meta_data/>
+        <content_set>
+            <name>Default</name>
+            <description></description>
+            <reserved_name>default</reserved_name>
+            <meta_data/>
+        </content_set>
+    </sensor>
+</content>

@@ -14,28 +14,16 @@ content.cfg:    Defines settings to use.
 ```
 
 Sensors:
-- MGC Tanium Action Output
-- MGC Tanium Action Failure
-- sensor performance
-- MGC Package Performance
-
-rename these to:
 - TanCD Tanium Action Output
 - TanCD Tanium Action Failure
 - TanCD Sensor Performance
 - TanCD Package Performance
 
 Packages:
-- install MGTools
-
-new packages:
 - TanCD perfinclude Windows
 - TanCD perfinclude Linux
 
-How to package and deliver TanCD Tanium Content?  Two sets:
-
-1.  Everything is installed in your test environment
-2.  Everything except these are installed in production:
-    - perfinclude packages
-    - sensor performance sensor
-
+Quick start:
+1.  Create a GIT repo.
+2.  Clone this repo as a submodule
+3.  Add "test_sensors.xml", "test_packages.xml", and "prod_sensors.xml" to your Tanium test server
