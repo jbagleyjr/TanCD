@@ -1,6 +1,9 @@
 # TanCD
 ##### Tanium content Continuous Deployment pipeline.
 
+*This is unofficial Tanium content. These have not been tested or approved by anyone at Tanium.*
+
+Files:
 ```
 tanrest.py:     Python class that implements the Tanium REST API.
 get_sensor.py:  Gets a sensor from tanium and stores it in a file.
@@ -11,6 +14,7 @@ check_*.py:     Checks that content ahears to policy for naming, caching, etc.. 
 analyze_sensors.py:   Runs static analysis on sensor scripts.
 test_*.py:      Executes sensors/packages on the Tanium server and collects performance data.
 content.cfg:    Defines settings to use.
+*.xml:          Sensors and packages used by TanCD.
 ```
 
 Sensors:
