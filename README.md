@@ -2,7 +2,7 @@
 ##### Tanium content Continuous Deployment pipeline.
 
 ```
-tanium.py:      Python class that implements the Tanium REST API.
+tanrest.py:     Python class that implements the Tanium REST API.
 get_sensor.py:  Gets a sensor from tanium and stores it in a file.
 get_package.py: Gets a package from tanium and stores it in a file.
 put_sensor.py:  Add or update a sensor on the tanium server from a file.
