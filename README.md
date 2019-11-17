@@ -27,3 +27,5 @@ Quick start:
 1.  Create a GIT repo.
 2.  Clone this repo as a submodule
 3.  Add "test_sensors.xml", "test_packages.xml", and "prod_sensors.xml" to your Tanium test server
+4.  (optional) Add "prod_sensors.xml" to your production Tanium server
+
