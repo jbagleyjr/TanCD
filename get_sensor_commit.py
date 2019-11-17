@@ -16,7 +16,7 @@ import getpass
 import getopt
 import time
 import subprocess
-import tanium
+import tanrest
 
 def git_revision_hash():
     return subprocess.check_output(['git', 'rev-parse', 'HEAD'])
@@ -95,7 +95,7 @@ def main(argv):
     if 'password' not in creds:
         creds['password'] = getpass.getpass()
 
-    tan = tanium.server(creds)
+    tan = tanrest.server(creds)
 
     #print(tan.get_session())
 

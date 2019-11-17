@@ -1,0 +1,52 @@
+{
+    "category": "MGCmisc",
+    "content_set": {
+        "id": 2,
+        "name": "Default"
+    },
+    "delimiter": ",",
+    "description": "Returns a randomly selected Chuck Norris Fact.",
+    "exclude_from_parse_flag": true,
+    "hidden_flag": false,
+    "ignore_case_flag": true,
+    "keep_duplicates_flag": false,
+    "max_age_seconds": 1200,
+    "mod_user": {
+        "display_name": "Bagley, James",
+        "domain": "MGC",
+        "id": 9,
+        "name": "jbagley"
+    },
+    "name": "Chuck Norris Fact",
+    "parameter_definition": "",
+    "queries": [
+        {
+            "platform": "Windows",
+            "script": "$sensor_name=\"Chuck Norris Fact\"\nif(Test-Path \"c:\\mgctanium\\perfinclude.ps1\") { $invocation=$MyInvocation; . \"c:\\mgctanium\\perfinclude.ps1\" }\n\n$facts=@(\n        \"Chuck Norris can delete the recycle bin.\",\n        \"Fear of spiders is called aracnaphobia. Fear of Chuck Norris is called Logic\",\n        \"Chuck Norris counted to infinity - twice.\",\n        \"Chuck Norris is the reason why Waldo is hiding.\",\n        \"Chuck Norris does not sleep. He waits.\"\n)\nsleep 1\n$numfacts = $facts.Length - 1\n$random = get-random -maximum $numfacts\nwrite-host $facts[$random]",
+            "script_type": "Powershell"
+        },
+        {
+            "platform": "Linux",
+            "script": "#!/bin/bash\n\nexport sensor_name=\"Chuck Norris Fact\"\n[ -f /opt/Tanium/TaniumClient/perf/perf.sh ] && . /opt/Tanium/TaniumClient/perf/perf.sh\n\nfacts=(\n        \"Chuck Norris can delete the recycle bin.\"\n        \"Fear of spiders is called aracnaphobia. Fear of Chuck Norris is called Logic\"\n        \"Chuck Norris counted to infinity - twice.\"\n        \"Chuck Norris is the reason why Waldo is hiding.\"\n        \"Chuck Norris does not sleep. He waits.\"\n        \"Chuck Norris can kill two stones with one bird.\"\n        \"There is no chin behind Chuck Norris' beard. There is only another fist.\"\n)\n\nnum_facts=${#facts[*]}\necho ${facts[$((RANDOM%num_facts))]}\n",
+            "script_type": "UnixShell"
+        },
+        {
+            "platform": "Mac",
+            "script": "#!/bin/bash\n\nexport sensor_name=\"Chuck Norris Fact\"\n[ -f /opt/Tanium/TaniumClient/perf/perf.sh ] && . /opt/Tanium/TaniumClient/perf/perf.sh\n\nfacts=(\n        \"Chuck Norris can delete the recycle bin.\"\n        \"Fear of spiders is called aracnaphobia. Fear of Chuck Norris is called Logic\"\n        \"Chuck Norris counted to infinity - twice.\"\n        \"Chuck Norris is the reason why Waldo is hiding.\"\n        \"Chuck Norris does not sleep. He waits.\"\n        \"There is no chin behind Chuck Norris' beard. There is only another fist.\"\n)\n\nnum_facts=${#facts[*]}\n\necho ${facts[$((RANDOM%num_facts))]}\n",
+            "script_type": "UnixShell"
+        },
+        {
+            "platform": "Solaris",
+            "script": "#!/bin/bash\n\nexport sensor_name=\"Chuck Norris Fact\"\n[ -f /opt/Tanium/TaniumClient/perf/perf.sh ] && . /opt/Tanium/TaniumClient/perf/perf.sh\n\nfacts=(\n        \"Chuck Norris can delete the recycle bin.\"\n        \"Fear of spiders is called aracnaphobia. Fear of Chuck Norris is called Logic\"\n        \"Chuck Norris counted to infinity - twice.\"\n        \"Chuck Norris is the reason why Waldo is hiding.\"\n        \"Chuck Norris does not sleep. He waits.\"\n        \"There is no chin behind Chuck Norris' beard. There is only another fist.\"\n)\n\nnum_facts=${#facts[*]}\n\necho ${facts[$((RANDOM%num_facts))]}\n",
+            "script_type": "UnixShell"
+        },
+        {
+            "platform": "AIX",
+            "script": "#!/bin/bash\n\nexport sensor_name=\"Chuck Norris Fact\"\n[ -f /opt/Tanium/TaniumClient/perf/perf.sh ] && . /opt/Tanium/TaniumClient/perf/perf.sh\n\nfacts=(\n        \"Chuck Norris can delete the recycle bin.\"\n        \"Fear of spiders is called aracnaphobia. Fear of Chuck Norris is called Logic\"\n        \"Chuck Norris counted to infinity - twice.\"\n        \"Chuck Norris is the reason why Waldo is hiding.\"\n        \"Chuck Norris does not sleep. He waits.\"\n        \"There is no chin behind Chuck Norris' beard. There is only another fist.\"\n)\n\nnum_facts=${#facts[*]}\n\necho ${facts[$((RANDOM%num_facts))]}\n",
+            "script_type": "UnixShell"
+        }
+    ],
+    "source_id": 0,
+    "string_count": 47,
+    "value_type": "String"
+}

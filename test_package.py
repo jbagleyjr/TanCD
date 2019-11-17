@@ -4,7 +4,7 @@
 # Copyright 2019 Mentor Graphics
 # SPDX-License-Identifier: Apache-2.0
 
-import tanium, json, time, sys, base64
+import tanrest, json, time, sys, base64
 from pprint import pprint as pp
 from time import sleep
 import getpass
@@ -95,7 +95,7 @@ def main(argv):
     if 'password' not in creds:
         creds['password'] = getpass.getpass()
 
-    tan = tanium.server(creds)
+    tan = tanrest.server(creds)
     tan.debug = True
     package = tan.get_package(packagename)
     tan.debug = False
