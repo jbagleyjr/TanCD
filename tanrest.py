@@ -155,17 +155,7 @@ class server():
 
 
 	def req(self, type, endpoint, json={}): 
-		# Validate session, renew if expired, send request verbosely.
-		#r = Request('POST', self.server + 'session/validate', json={'session':self.session_id}).prepare()
-		#valid = self.s.send(r, verify=False)
-		#if valid.status_code == 403:
-		#	print('Session expired, renewing.')
-		#	self.session_id = self.get_session()
-		#	self.req(type, endpoint)
-		#elif valid.status_code == 200: 
-			#print('Valid session, sending request.')
 		r = Request(type, self.server + endpoint, json=json, headers={'session':self.session_id}).prepare()
-		#pp(vars(r)) # Dumps full response
 		if not self.validate_session():
 			return False
 
@@ -180,8 +170,6 @@ class server():
 				pp(vars(r))
 			return False
 
-#	def get_question_results(self, qud):
-		# Poll the result info metadata until 99% of endpoints have responded, then pull results.
 	def get_action_group_id(self,action_group):
 		return self.req('GET', 'action_groups/by-name/' + action_group)["data"]["id"]
 
@@ -190,8 +178,6 @@ class server():
 		action_id = action["data"]["id"]
 		expire_seconds = action["data"]["expire_seconds"]
 
-		pp(action)
-		
 		if get_results:
 			if not self.quiet:
 				print("waiting for action id " + str(action_id) + " to " + str(self.action_complete_percent) + " complete.")
@@ -262,8 +248,8 @@ class server():
 			"selects": [
 				{
 					"sensor": {
-						"name": "MGC Tanium Action Output",
-						"source_hash": self.get_sensor_hash("MGC Tanium Action Output"),
+						"name": "TanCD Tanium Action Output",
+						"source_hash": self.get_sensor_hash("TanCD Tanium Action Output"),
 						"parameters": [
 							{
 								"key": "||actionNumber||",
@@ -278,7 +264,7 @@ class server():
 				'filters': [
 					{
 						'sensor': {
-							'source_hash': self.get_sensor_hash("MGC Tanium Action Failure"),
+							'source_hash': self.get_sensor_hash("TanCD Tanium Action Failure"),
 							'parameters': [
 								{
 									"key": "||actionNumber||",
@@ -323,7 +309,7 @@ class server():
 				'filters': [
 					{
 						'sensor': {
-							'source_hash': self.get_sensor_hash("MGC Tanium Action Failure"),
+							'source_hash': self.get_sensor_hash("TanCD Tanium Action Failure"),
 							'parameters': [
 								{
 									"key": "||actionNumber||",
@@ -375,7 +361,7 @@ class server():
 				'filters': [
 					{
 						'sensor': {
-							'source_hash': self.get_sensor_hash("MGC Tanium Action Failure"),
+							'source_hash': self.get_sensor_hash("TanCD Tanium Action Failure"),
 							'parameters': [
 								{
 									"key": "||actionNumber||",
@@ -407,8 +393,8 @@ class server():
 			"selects": [
 				{
 					"sensor": {
-						"name": "MGC Tanium Action Output",
-						"source_hash": tan.get_sensor_hash("MGC Tanium Action Output"),
+						"name": "TanCD Tanium Action Output",
+						"source_hash": tan.get_sensor_hash("TanCD Tanium Action Output"),
 						"parameters": [
 							{
 								"key": "||actionNumber||",
