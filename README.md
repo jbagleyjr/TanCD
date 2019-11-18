@@ -3,6 +3,10 @@
 
 *This is unofficial Tanium content. These have not been tested or approved by anyone at Tanium.*
 
+Intended use is to pull this GIT into your internal GIT repo as a sub-module.  This repo should not
+contain any of your internally developed Tanium content, only the workflow to apply a CD pipeline to
+your Tanium Content development workflow.
+
 Files:
 ```
 tanrest.py:     Python class that implements the Tanium REST API.
@@ -28,8 +32,10 @@ Packages:
 - TanCD perfinclude Linux
 
 Quick start:
-1.  Create a GIT repo.
-2.  Clone this repo as a submodule
-3.  Add "test_sensors.xml", "test_packages.xml", and "prod_sensors.xml" to your Tanium test server
-4.  (optional) Add "prod_sensors.xml" to your production Tanium server
-
+1.  Create a GIT repo to store your internally developed Tanium Content (sensors and packages).
+2.  Clone this repo as a submodule.
+  - `git submodule add https://github.com/jbagleyjr/TanCD.git`
+3.  Add "test_sensors.xml", "test_packages.xml", and "prod_sensors.xml" to your Tanium test server.
+4.  (optional) Add "prod_sensors.xml" to your production Tanium server.
+5.  (optional) Verify the tanrest class works as expected by adding the included Chuck Norris Fact sensor to your tanium server.
+   - `cd TanCD; python3 put_sensor.py --server 139.181.111.21 --username tanium --sensor 'Chuck Norris Fact'`

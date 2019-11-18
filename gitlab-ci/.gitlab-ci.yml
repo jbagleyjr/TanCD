@@ -1,0 +1,131 @@
+###
+# sample .gitlab-ci.yml from Mentor Graphics.  This won't work directly
+# in your environment, but should at least provide a decent starting point.
+
+stages:
+  - check
+  - analyze
+  - test
+  - deploy
+  - maintenance
+
+email_action_failures:on-schedule:
+  stage: maintenance
+  only:
+    - schedules
+  except:
+    - triggers
+  script:
+    - TanCD/email_action_failures.py --server <your tanium server> --hours 24 --username "$taniumuser" --password "$taniumpass"
+
+checkcontent:
+  stage: check
+  except:
+    - schedules
+  script:
+    - /bin/bash .gitlabutils/checkcontent.sh
+  artifacts:
+    paths:
+      - check_sensor_warnings.log
+      - check_package_warnings.log
+      - updated_sensors.txt
+      - updated_packages.txt
+
+VBScript:
+  stage: analyze
+  except:
+    - schedules
+  tags:
+    - windows10
+  script:
+    - '"C:\Program Files\Python\Python37\python.exe" TanCD\analyze_sensors.py --type VBScript'
+
+WMI query:
+  stage: analyze
+  except:
+    - schedules
+  tags:
+    - windows10
+  script:
+    - '"C:\Program Files\Python\Python37\python.exe" TanCD\analyze_sensors.py --type "WMI query"'
+
+BES Relevance Expression:
+  stage: analyze
+  except:
+    - schedules
+  tags:
+    - windows10
+  script:
+    - '"C:\Program Files\Python\Python37\python.exe" TanCD\analyze_sensors.py --type "BES Relevance Expression"'
+
+PowerShell Script:
+  except:
+    - schedules
+  stage: analyze
+##
+## commented this out because could not figure out how to prevent it from prompting.
+#  before_script:
+#    - powershell.exe Install-PackageProvider Nuget -MinimumVersion 2.8.5.201 –Force
+#    - powershell.exe Install-Module PSScriptAnalyzer -Force
+#    - powershell.exe Invoke-ScriptAnalyzer -ScriptDefinition 'gci'
+  tags:
+    - windows10
+  script:
+    - '"C:\Program Files\Python\Python37\python.exe" TanCD\analyze_sensors.py --type Powershell'
+
+Python:
+  # both windows and linux, so we'll use linux to analyze both platforms.
+  # uses "pylint"
+  tags:
+    - linux
+  stage: analyze
+  except:
+    - schedules
+  script:
+    - TanCD/analyze_sensors.py --type Python
+
+Shell:
+  tags:
+    - linux
+  stage: analyze
+  except:
+    - schedules
+  script:
+    - TanCD/analyze_sensors.py --type UnixShell
+
+test sensors:
+  stage: test
+  except:
+    - schedules
+  before_script:
+    - /bin/bash .gitlabutils/addcontent.sh <your tanium test server>
+  script:
+    - /bin/bash .gitlabutils/testsensors.sh
+  artifacts:
+    paths:
+      - test_sensor_summary.html
+
+test packages:
+  stage: test
+  except:
+    - schedules
+  before_script:
+    - /bin/bash .gitlabutils/addcontent.sh <your tanium test server>
+    - sleep 90s
+  script:
+    - /bin/bash .gitlabutils/testpackages.sh
+  artifacts:
+    paths:
+      - test_package_summary.html
+##
+# deploy without approval?
+#deploy:
+#  before_script:
+#    - git submodule sync --recursive
+#    - git submodule update --init --recursive
+#  stage: deploy
+#  except:
+#    - schedules
+#  script:
+#    - /bin/bash .gitlabutils/addcontent.sh <your tanium server>
+
