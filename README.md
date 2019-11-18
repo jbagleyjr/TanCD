@@ -39,3 +39,16 @@ Quick start:
 4.  (optional) Add "prod_sensors.xml" to your production Tanium server.
 5.  (optional) Verify the tanrest class works as expected by adding the included Chuck Norris Fact sensor to your tanium server.
    - `cd TanCD; python3 put_sensor.py --server 139.181.111.21 --username tanium --sensor 'Chuck Norris Fact'`
+6.  Setup your CI/CD pipeline!  You can use the scripts and yml under gitlab-ci as a starting point, but copy them into your own GIT repo.
+
+All of the command line python programs are setup to read/write sensor and package files into 'sensor' and 'package'
+sub-directories of the current directory.  This allows 'TanCD' content to remain in a separate GIT repo from your
+Tanium content assuming that you invoke the commands from the parent directory.  As in;
+
+## Get a sensor
+`python3 TanCD/get_sensor.py --server <your tanium server> --username <your tanium username> --password <your password> --sensor "<your new sensor>"`
+
+## Check a sensor
+`python3 TanCD/check_sensor.py --sensor "<your new sensor>"`
+
+
