@@ -10,11 +10,33 @@ from pprint import pprint as pp
 import time, json, atexit, re
 from datetime import datetime, timezone
 from dateutil import parser
-
+import configparser
 import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
+import os
 
+##
+# just a standard way to read content.cfg
+#   config class extends configparser with some pathing magic
+class config(configparser.ConfigParser):
+	def __init__(self, configfile = 'content.cfg'):
+		super(config, self).__init__()
+		self.configfilepath=self.get_config_abspath(configfile)
+		self.read_config(self.configfilepath)
 
+	def get_config_abspath(self, configfile):
+		patharr = os.path.dirname(os.path.abspath(__file__)).split("/")
+		filepath = "/".join(patharr[0:patharr.index("TanCD")]) + "/" + configfile
+		if os.path.exists(filepath):
+			return filepath
+		elif os.path.exists("/".join(patharr) + "/" + configfile):
+			return "/".join(patharr) + "/" + configfile
+
+	def read_config(self, filepath):
+		self.read(filepath)
+
+##
+# the actual tanrest class starts here
 class server():
 	def __init__(self, creds, debug = False, quiet=False):
 		self.s = Session()

@@ -11,13 +11,10 @@ import getpass
 import getopt
 import tempfile
 import os
-
+import tanrest
 import subprocess
 
-import configparser
-
-config = configparser.ConfigParser()
-config.read('content.cfg')
+config = tanrest.config()
 
 failcount=0
 warncount=0
