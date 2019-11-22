@@ -17,7 +17,7 @@ import subprocess
 import configparser
 
 config = configparser.ConfigParser()
-config.read('taniumcd/content.cfg')
+config.readfp(open('content.cfg'))
 
 failcount=0
 warncount=0
