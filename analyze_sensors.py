@@ -17,7 +17,7 @@ import subprocess
 import configparser
 
 config = configparser.ConfigParser()
-config.readfp(open('content.cfg'))
+config.read('content.cfg')
 
 failcount=0
 warncount=0
