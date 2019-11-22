@@ -1,17 +1,11 @@
 #!/usr/bin/env python3
-import tanium, json, time, sys, base64
+import tanrest, json, time, sys, base64
 from pprint import pprint as pp
 from time import sleep
 import getpass
 import getopt
 from datetime import datetime, timedelta, timezone
 from dateutil import parser
-
-
-import configparser
-
-config = configparser.ConfigParser()
-config.readfp(open('content.cfg'))
 
 def usage():
     print("""
