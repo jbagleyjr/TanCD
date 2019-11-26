@@ -68,7 +68,7 @@ def main(argv):
     if 'password' not in creds:
         creds['password'] = getpass.getpass()
 
-    tan = tanium.server(creds)
+    tan = tanrest.server(creds)
 
     actions = tan.req('GET', 'actions')
     #pp(len(actions["data"]))
