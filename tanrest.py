@@ -153,6 +153,8 @@ class server():
 		if sensor:
 			return sensor['data']['hash']
 		else:
+			##
+			# this should throw an error and exit.
 			return False
 
 	def get_sensor_id(self, sensorname):

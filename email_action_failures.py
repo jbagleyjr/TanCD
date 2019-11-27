@@ -104,8 +104,8 @@ def main(argv):
                     notify = True
                     action['notify_messages'].append("Deployment references a package that doesn't exist.  Scheduled action needs to be deleted and re-created.")
                 else:                        
-                    tan.quiet=True
-                    #tan.debug=True
+                    tan.quiet=False
+                    tan.debug=True
                     action['results'] = tan.get_action_results(action['id'])
                     if action['results']['error_count'] > 0 or tan.get_action_failure(action['id']):
                         notify = True
