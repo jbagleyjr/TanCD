@@ -25,12 +25,17 @@ class config(configparser.ConfigParser):
 		self.read_config(self.configfilepath)
 
 	def get_config_abspath(self, configfile):
-		patharr = os.path.dirname(os.path.abspath(__file__)).split("/")
-		filepath = "/".join(patharr[0:patharr.index("TanCD")]) + "/" + configfile
+		if os.name == 'nt':
+			pathsep = "\\"
+		else:
+			pathsep = "/"
+
+		patharr = os.path.dirname(os.path.abspath(__file__)).split(pathsep)
+		filepath = pathsep.join(patharr[0:patharr.index("TanCD")]) + pathsep + configfile
 		if os.path.exists(filepath):
 			return filepath
-		elif os.path.exists("/".join(patharr) + "/" + configfile):
-			return "/".join(patharr) + "/" + configfile
+		elif os.path.exists(pathsep.join(patharr) + pathsep + configfile):
+			return pathsep.join(patharr) + pathsep + configfile
 
 	def read_config(self, filepath):
 		self.read(filepath)
