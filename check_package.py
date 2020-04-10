@@ -78,30 +78,31 @@ def main(argv):
     warncount=0
 
 
-    for file in package["files"]:
-        if 'source' not in file:
-            failmessage+="\n\nPackage files must be remote files, not local files."
-            failurecount+=1
-        else:
-            if file["download_seconds"] > int(config.get('package','max_download_seconds')):
-                failmessage+="\n\nFile (" + file["name"] + ") exceeds max download seconds."
-                failmessage+="\n Set 'Check for update' to " + config.get('package', 'max_download_seconds') + " seconds or less."
+    if "files" in package:
+        for file in package["files"]:
+            if 'source' not in file:
+                failmessage+="\n\nPackage files must be remote files, not local files."
                 failurecount+=1
-            try:
-                context = ssl._create_unverified_context()
-                response = urllib.request.urlopen(file["source"], context=context)
-                data = response.read()
-            except:
-                failmessage+="\n\nFile source (" + file["source"] + ") is not downloadable."
-                failurecount+=1
+            else:
+                if file["download_seconds"] > int(config.get('package','max_download_seconds')):
+                    failmessage+="\n\nFile (" + file["name"] + ") exceeds max download seconds."
+                    failmessage+="\n Set 'Check for update' to " + config.get('package', 'max_download_seconds') + " seconds or less."
+                    failurecount+=1
+                try:
+                    context = ssl._create_unverified_context()
+                    response = urllib.request.urlopen(file["source"], context=context)
+                    data = response.read()
+                except:
+                    failmessage+="\n\nFile source (" + file["source"] + ") is not downloadable."
+                    failurecount+=1
 
-            badurl=True
-            for url in config.get('package','remote_file_urls').split(" "):
-                if url in file["source"]:
-                    badurl=False
-            if badurl:
-                failmessage+="\n\nRemote file url (" + file["source"] + ") is not allowed.\n Remote files must be hosted at one of these locations:"
-                failmessage+="\n   - " + "\n   - ".join(config.get('package','remote_file_urls').split(" "))
+                badurl=True
+                for url in config.get('package','remote_file_urls').split(" "):
+                    if url in file["source"]:
+                        badurl=False
+                if badurl:
+                    failmessage+="\n\nRemote file url (" + file["source"] + ") is not allowed.\n Remote files must be hosted at one of these locations:"
+                    failmessage+="\n   - " + "\n   - ".join(config.get('package','remote_file_urls').split(" "))
 
 
     if not package["name"].startswith(config.get('prefix','name')):
