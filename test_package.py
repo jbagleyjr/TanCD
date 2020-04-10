@@ -290,10 +290,10 @@ def main(argv):
         htmloutput+="</ul>"
 
         if summary_performance_results["avgruntime"] > config.getint('package','warn_avgruntime'):
-            htmloutput+="<h3>WARNING: package '" + packagename + "' has an average runtime longer than " + config.getint('package', 'warn_avgruntime') + "</h3>"
+            htmloutput+="<h3>WARNING: package '" + packagename + "' has an average runtime longer than " + str(config.getint('package', 'warn_avgruntime')) + "</h3>"
 
         if summary_performance_results["maxruntime"] > config.getint('package','warn_maxruntime'):
-            htmloutput+="<h3>WARNING: package '" + packagename + "' has a max runtime longer than " + config.getint('package','warn_maxruntime')
+            htmloutput+="<h3>WARNING: package '" + packagename + "' has a max runtime longer than " + str(config.getint('package','warn_maxruntime')) + "</h3>"
 
         htmloutput+=packageoutput
 
