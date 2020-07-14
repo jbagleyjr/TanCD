@@ -126,8 +126,8 @@ def main(argv):
         "selects": [
             {
                 "sensor": {
-                    "name": "sensor performance",
-                    "source_hash": tan.get_sensor_hash("sensor performance"),
+                    "name": "TanCD Sensor Performance",
+                    "source_hash": tan.get_sensor_hash("TanCD Sensor Performance"),
                     "parameters": [
                         {
                             "key": "||sensor||",

@@ -47,7 +47,7 @@ class server():
 		self.s = Session()
 		self.debug = debug
 		self.quiet = quiet
-		self.question_complete_percent = 0.99
+		self.question_complete_percent = 0.97
 		self.action_complete_percent = 0.8
 		self.creds = creds
 		self.server = str(creds['server']) if creds['server'][-1] == '/' else str(creds['server'] + '/')
@@ -204,6 +204,7 @@ class server():
 
 	def run_action(self,action_spec,get_results = False):
 		action = self.req('POST', 'actions/', action_spec)
+		pp(action)
 		action_id = action["data"]["id"]
 		expire_seconds = action["data"]["expire_seconds"]
 
