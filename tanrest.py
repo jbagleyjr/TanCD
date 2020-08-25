@@ -134,6 +134,7 @@ class server():
 			return False
 
 	def update_package(self, id, package):
+		print('id is ' + str(id))
 		return self.req('PATCH', 'packages/' + str(id), package)
 
 	def create_package(self, package):
@@ -183,8 +184,11 @@ class server():
 		return self.req('POST', 'sensors/', sensor)
 
 
-	def req(self, type, endpoint, json={}): 
-		r = Request(type, self.server + endpoint, json=json, headers={'session':self.session_id}).prepare()
+	def req(self, type, endpoint, data={}):
+		if type == 'PATCH':
+			r = Request(type, self.server + endpoint, data=json.dumps(data), headers={'session':self.session_id}).prepare()			
+		else:
+			r = Request(type, self.server + endpoint, json=data, headers={'session':self.session_id}).prepare()
 		if not self.validate_session():
 			return False
 
@@ -196,7 +200,10 @@ class server():
 			if not self.quiet:
 				print('Request error: ' + str(resp))
 			if self.debug:
+				pp('request object:')
 				pp(vars(r))
+				pp('response object:')
+				pp(vars(resp))
 			return False
 
 	def get_action_group_id(self,action_group):

@@ -3,6 +3,21 @@
 git log --name-status -1 | grep "^A\|^M" | grep "sensor/" | awk -F/ '{ print $2 }' | awk -F. '{ print $1 }' > updated_sensors.txt
 git log --name-status -1 | grep "^A\|^M" | grep "package/" | awk -F/ '{ print $2 }' | awk -F. '{ print $1 }' > updated_packages.txt
 git log --name-status -1 | grep "^A\|^M" | grep "package_files/" | awk -F/ '{ print $(NF-1)"/"$NF }' > updated_package_files.txt
+git log --name-status -1 | grep "^A\|^M" | grep "py/" | awk -F/ '{ print $2 }' | awk -F. '{ print $1 }' > updated_python.txt
+
+##
+# if the updated_python.txt file size is greater than zero
+if [ -s updated_python.txt ]
+then
+    echo "Checking if updated python content is used in any sensors or packages"
+    while read -r line
+    do
+        echo "Checking for use of python module <$line>"
+        modulename="$(echo $line | awk -F. '{ print $1 }')"
+        egrep "$modulename" sensor/*.json | grep json | awk -F. '{ print $1 }' | awk -F\/ '{ print $2 }' | sort | uniq >> updated_sensors.txt
+        egrep -r "$modulename" package_files | awk -F/ '{ print $(NF-1)"/"$NF }' | sort | uniq >> updated_package_files.txt
+    done < updated_python.txt
+fi
 
 sensors=()
 packages=()
@@ -15,7 +30,7 @@ exitval=0
 # reference: https://github.com/koalaman/shellcheck/issues/1277
 export LC_ALL=en_US.UTF-8
 
-locale
+#locale
 
 while read -r line
 do

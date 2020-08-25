@@ -1,0 +1,51 @@
+{
+    "category": "TanCD",
+    "content_set": {
+        "id": 2,
+        "name": "Default"
+    },
+    "delimiter": "|",
+    "description": "returns true or false whether a TanCD python update is needed.\ncommit=c67c2fb20b14a1921f34956192f1e5f8baff0c2e",
+    "hidden_flag": false,
+    "ignore_case_flag": true,
+    "keep_duplicates_flag": false,
+    "max_age_seconds": 900,
+    "mod_user": {
+        "display_name": "Bagley, James",
+        "domain": "MGC",
+        "id": 9,
+        "name": "jbagley"
+    },
+    "name": "TanCD Python Update Needed",
+    "parameter_definition": "{\"parameters\":[{\"parameterType\":\"com.tanium.components.parameters::TextInputParameter\",\"model\":\"com.tanium.components.parameters::TextInputParameter\",\"key\":\"commit\",\"validationExpressions\":[{\"expression\":\".*\",\"helpString\":\"\",\"model\":\"com.tanium.models::ValidationExpression\",\"parameterType\":\"com.tanium.models::ValidationExpression\"}],\"label\":\"commit hash\",\"helpString\":\"The commit hash to compare against, value from `git rev-parse --short HEAD`\",\"defaultValue\":\"c67c2fb\"}],\"model\":\"com.tanium.components.parameters::ParametersArray\",\"parameterType\":\"com.tanium.components.parameters::ParametersArray\"}",
+    "queries": [
+        {
+            "platform": "Windows",
+            "script": "import tanium\nfrom os import path,readlink\nimport tanium.sensor_io.sensor_input\n\ntanium_add_results = tanium.results.add\n\ninputs = tanium.sensor_io.sensor_input.SensorInputs()\ninputs.add_param('commit', '||commit||', None)\ncommit = inputs.get_param('commit')\n\npython_install_dir = tanium.client.common.create_client_subdirs('Tools/TanCD/py')\n\nif path.exists(python_install_dir + '/commit.txt'):\n  installedcommithash = open(python_install_dir + '/commit.txt', 'r').read().strip()\n  if installedcommithash == commit:\n    tanium_add_results('False')\n  else:\n    tanium_add_results('True')\nelse:\n  tanium_add_results('True')\n",
+            "script_type": "Python"
+        },
+        {
+            "platform": "Linux",
+            "script": "import tanium\nfrom os import path,readlink\nimport tanium.sensor_io.sensor_input\n\ntanium_add_results = tanium.results.add\n\ninputs = tanium.sensor_io.sensor_input.SensorInputs()\ninputs.add_param('commit', '||commit||', None)\ncommit = inputs.get_param('commit')\n\npython_install_dir = tanium.client.common.create_client_subdirs('Tools/TanCD/py')\n\nif path.exists(python_install_dir + '/commit.txt'):\n  installedcommithash = open(python_install_dir + '/commit.txt', 'r').read().strip()\n  if installedcommithash == commit:\n    tanium_add_results('False')\n  else:\n    tanium_add_results('True')\nelse:\n  tanium_add_results('True')\n",
+            "script_type": "Python"
+        },
+        {
+            "platform": "Mac",
+            "script": "import tanium\nfrom os import path,readlink\nimport tanium.sensor_io.sensor_input\n\ntanium_add_results = tanium.results.add\n\ninputs = tanium.sensor_io.sensor_input.SensorInputs()\ninputs.add_param('commit', '||commit||', None)\ncommit = inputs.get_param('commit')\n\npython_install_dir = tanium.client.common.create_client_subdirs('Tools/TanCD/py')\n\nif path.exists(python_install_dir + '/commit.txt'):\n  installedcommithash = open(python_install_dir + '/commit.txt', 'r').read().strip()\n  if installedcommithash == commit:\n    tanium_add_results('False')\n  else:\n    tanium_add_results('True')\nelse:\n  tanium_add_results('True')\n",
+            "script_type": "Python"
+        },
+        {
+            "platform": "Solaris",
+            "script": "#!/bin/sh\necho \"NA on Solaris\"\n",
+            "script_type": "UnixShell"
+        },
+        {
+            "platform": "AIX",
+            "script": "#!/bin/sh\necho \"NA on AIX\"\n",
+            "script_type": "UnixShell"
+        }
+    ],
+    "source_id": 0,
+    "string_count": 0,
+    "value_type": "String"
+}
