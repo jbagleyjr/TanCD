@@ -14,6 +14,8 @@ import os
 import tanrest
 import subprocess
 
+
+
 config = tanrest.config()
 
 failcount=0
@@ -89,6 +91,12 @@ def main(argv):
         analysis = subprocess.Popen('/usr/bin/pylint ' + script, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         analysis.wait()
         output+=analysis.communicate()[0].decode()
+        ans = ""
+        for line in output.split("\n"):
+            if line.find("Unable to import 'tanium'") < 0:
+                ans=ans + line + "\n"
+        output = ans
+
         if '\nE:' in output or '\nF:' in output:
             fail(script,output)
         if '\nW:' in output or '\nC:' in output or '\nR:' in output:
