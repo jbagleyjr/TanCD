@@ -96,9 +96,7 @@ def main(argv):
         creds['password'] = getpass.getpass()
 
     tan = tanrest.server(creds)
-    tan.debug = True
     package = tan.get_package(packagename)
-    tan.debug = False
 
     failmessage="Package '" + packagename + "' failed testing!"
     failurecount=0
@@ -129,10 +127,20 @@ def main(argv):
         "action_group" : { 
             "id" : tan.get_action_group_id(action_group)
         },
-      #  "parameters": [],
-    #    "target_group" : {
-    #        "name" : "Default"
-    #    },
+        "target_group" : {
+            'and_flag': True,
+            'filters': [
+                {
+                    'sensor': {
+                        'source_hash': tan.get_sensor_hash("Online")
+                    },
+                    'operator': 'Equal',
+                    'value': 'True',
+                    'value_type': 'String',
+                    'ignore_case_flag': True,
+                }
+            ]
+        },
         "expire_seconds" : package["expire_seconds"]
     }
 

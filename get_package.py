@@ -83,8 +83,6 @@ def main(argv):
 
     tan = tanrest.server(creds)
 
-    #print(tan.get_session())
-
     package = tan.get_package(packagename)
 
     if not package:

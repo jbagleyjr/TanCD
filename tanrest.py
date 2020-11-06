@@ -211,9 +211,10 @@ class server():
 
 	def run_action(self,action_spec,get_results = False):
 		action = self.req('POST', 'actions/', action_spec)
-		pp(action)
 		action_id = action["data"]["id"]
 		expire_seconds = action["data"]["expire_seconds"]
+		if self.debug:
+			pp(action)
 
 		if get_results:
 			if not self.quiet:
