@@ -194,13 +194,13 @@ def main(argv):
             failurecount+=1
 
         if summary_performance_results["avgruntime"] > config.getint('sensor','fail_avgruntime'):
-            failmessage+="\n\n\nSensor average runtime is too long (" + int(summary_performance_results["avgruntime"]) + ")"
+            failmessage+="\n\n\nSensor average runtime is too long (" + str(int(summary_performance_results["avgruntime"])) + ")"
             failmessage+="\nMax allowed average runtime is: " + str(config.getint('sensor','fail_avgruntime'))
             failurecount+=1
 
         #fail_maxruntime
         if summary_performance_results["maxruntime"] > config.getint('sensor','fail_maxruntime'):
-            failmessage+="\n\n\nSensor max runtime is too long (" + int(summary_performance_results["maxruntime"]) + ")"
+            failmessage+="\n\n\nSensor max runtime is too long (" + str(int(summary_performance_results["maxruntime"])) + ")"
             failmessage+="\nMax allowed runtime is: " + str(config.getint('sensor','fail_maxruntime'))
             failurecount+=1
 
