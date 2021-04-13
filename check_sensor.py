@@ -117,7 +117,7 @@ def main(argv):
             if config.get('sensor','pshperfinclude') not in script["script"]:
                 if script["script"].strip() != config.get('platform_default_sensors', script["platform"]).strip():
                     failmessage+="\n\nPowershell:  All sensor scripts need to include the following lines near the top of the script for performance testing."
-                    failmessage+="\n   $sensor_name=\"" + content["sensor"][0]["name"] + "\""
+                    failmessage+="\n   $sensor_name=\"" + sensor["name"] + "\""
                     failmessage+="\n   " + config.get('sensor','pshperfinclude')
                     failurecount+=1
 
