@@ -209,6 +209,34 @@ class server():
 	def get_action_group_id(self,action_group):
 		return self.req('GET', 'action_groups/by-name/' + action_group)["data"]["id"]
 
+	def get_scheduled_action_id(self,action_name):
+		try:
+			return self.req('GET', 'saved_actions/by-name/' + action_name)["data"]["id"]
+		except:
+			return False
+
+	def delete_scheduled_action(self,action_id):
+		return self.req('DELETE', 'saved_actions/' + str(action_id))
+
+	def schedule_action(self,action_spec,get_results = False):
+		action = self.req('POST', 'saved_actions/', action_spec)
+		action_id = action["data"]["last_action"]["id"]
+		expire_seconds = action["data"]["expire_seconds"]
+		if self.debug:
+			pp(action)
+
+		if get_results:
+			if not self.quiet:
+				print("waiting for action id " + str(action_id) + " to " + str(self.action_complete_percent) + " complete.")
+			result_info = self.get_action_results(action_id)
+			return {
+				"action_id" : action_id,
+				"result_info" : result_info,
+				"action" : action
+			}
+		else:
+			return action_id
+
 	def run_action(self,action_spec,get_results = False):
 		action = self.req('POST', 'actions/', action_spec)
 		action_id = action["data"]["id"]
