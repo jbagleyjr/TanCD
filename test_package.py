@@ -112,8 +112,9 @@ def main(argv):
     elif "windows" in packagename.lower():
         action_group = "all windows"
     else:
-        failmessage+="\n\n\nUnable to determine action group (Windows|Linux) to execute package on."
-        failurecount+=1
+        action_group = "All Computers"
+        # failmessage+="\n\n\nUnable to determine action group (Windows|Linux) to execute package on."
+        # failurecount+=1
 
     #pp(package)
 
