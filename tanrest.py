@@ -575,6 +575,21 @@ class server():
 			pp(results)
 		return results["data"]
 
+	def get_saved_question_results(self, qid):
+		q = self.req('GET', 'result_info/saved_question/' + str(qid))
+		q  = q['data']['result_infos'][0]
+
+		while q['tested'] < (q['estimated_total'] * self.question_complete_percent):
+			if not self.quiet:
+				print("Polling qid {}, {}/{}.".format(qid,q['tested'],q['estimated_total']))
+			q = self.req('POST', 'result_info/saved_question/' + str(qid))['data']['result_infos'][0]
+			time.sleep(1) # Polling rate
+		results = self.req('GET', 'result_data/saved_question/{}'.format(qid))
+		if self.debug:
+			print("get_question_results raw data")
+			pp(results)
+		return results["data"]
+
 	def escape_ansi(self, line):
 		ansi_escape = re.compile(r'(\x9B|\x1B\[)[0-?]*[ -/]*[@-~]')
 		try:
