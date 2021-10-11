@@ -8,7 +8,7 @@ setup(
     author='James Bagley',
     author_email='james_bagley@mentor.com',
     license='Apache-2.0',
-    py_modules=["tanrest"],
+    py_modules=["tancd","tanrest"],
     # install_requires=['http',
     #                   'json',
     #                   'requests',                    
