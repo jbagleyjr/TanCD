@@ -539,6 +539,10 @@ class server():
 		question_result = self.req('POST', 'questions/', question)
 		return question_result['data']['id']
 
+	def create_saved_question(self,question):
+		question_result = self.req('POST', 'saved_questions/', question)
+		return question_result['data']['id']
+
 	def make_results_html(self,data):
 		output="<table><tr>\n "
 		for result in data["result_sets"]:
