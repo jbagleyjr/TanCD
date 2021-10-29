@@ -13,7 +13,7 @@ from dateutil import parser
 import configparser
 import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
-import os
+import os,sys
 
 ##
 # just a standard way to read content.cfg
@@ -43,17 +43,19 @@ class config(configparser.ConfigParser):
 ##
 # the actual tanrest class starts here
 class server():
-	def __init__(self, creds, debug = False, quiet=False):
+	def __init__(self, creds, debug = False, quiet=False, keepcreds=True):
 		self.s = Session()
 		self.debug = debug
 		self.quiet = quiet
 		self.question_complete_percent = 0.97
 		self.action_complete_percent = 0.8
 		self.creds = creds
+		self.keepcreds = keepcreds
 		self.server = str(creds['server']) if creds['server'][-1] == '/' else str(creds['server'] + '/')
-		self.get_session()
+		if not self.get_session():
+			sys.exit('Authentication failure')
 		atexit.register(self.logout)
-		self.saved = [i['id'] for i in self.req('get', 'saved_questions')['data'] if 'id' in i]
+		#self.saved = [i['id'] for i in self.req('get', 'saved_questions')['data'] if 'id' in i]
 		##
 		# disable warnings after the first requests to ensure it gets displayed at least once 
 		# before being supressed.
@@ -66,9 +68,16 @@ class server():
 		resp = self.s.send(r, verify=False)
 		if self.debug:
 			pp(vars(resp))
-		self.session_id = (resp.json()['data']['session'])
-		self.session_time = time.time()
-		return True
+		if resp.status_code == 200:
+			self.session_id = (resp.json()['data']['session'])
+			self.session_time = time.time()
+			if not self.keepcreds:
+				del self.creds
+			return True
+		else:
+			self.session_id = ''
+			self.session_time = 0
+			return False
 
 	def logout(self):
 		r = Request('POST', self.server + 'session/logout', json={'session': self.session_id}).prepare()
@@ -81,17 +90,24 @@ class server():
 
 	def validate_session(self):
 		# Validate session, renew if expired, send request verbosely.
+		if self.debug:
+			print('Session time ' + str(time.time() - self.session_time))
 		if time.time() - self.session_time < 60:
 			# if the session id is less than a minute old then assume it's still valid
+			if not self.quiet:
+				print('Session OK.')
 			return True
 		else:
+			# if the session is older than a minute then get a new session id if it's expired
 			r = Request('POST', self.server + 'session/validate', json={'session':self.session_id}).prepare()
 			valid = self.s.send(r, verify=False)
 			if valid.status_code == 403:
 				if not self.quiet:
 					print('Session expired, renewing.')
-				self.get_session()
+				return self.get_session()
 			elif valid.status_code == 200:
+				if not self.quiet:
+					print('Session valid')
 				return True
 			else:
 				return False
@@ -543,6 +559,14 @@ class server():
 		question_result = self.req('POST', 'saved_questions/', question)
 		return question_result['data']['id']
 
+	def get_question_info(self, qid):
+		questioninfo = self.req('GET', 'questions/' + str(qid))
+		return questioninfo["data"]
+
+	def get_saved_questions(self):
+		questions = self.req('GET', 'saved_questions')
+		return questions['data']
+
 	def make_results_html(self,data):
 		output="<table><tr>\n "
 		for result in data["result_sets"]:
@@ -556,10 +580,6 @@ class server():
 				output+="\n</tr>\n"
 		output+="\n</table>\n<br>\n\n"
 		return output
-
-	def get_question_info(self, qid):
-		questioninfo = self.req('GET', 'questions/' + str(qid))
-		return questioninfo["data"]
 	
 	def get_question_results(self, qid):
 		# Poll the result info metadata until 99% of endpoints have responded, then pull results.
