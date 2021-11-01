@@ -201,12 +201,13 @@ class server():
 
 
 	def req(self, type, endpoint, data={}):
+		if not self.validate_session():
+			return False
+			
 		if type == 'PATCH':
 			r = Request(type, self.server + endpoint, data=json.dumps(data), headers={'session':self.session_id}).prepare()			
 		else:
 			r = Request(type, self.server + endpoint, json=data, headers={'session':self.session_id}).prepare()
-		if not self.validate_session():
-			return False
 
 		resp = self.s.send(r, verify=False)
 		
