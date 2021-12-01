@@ -80,20 +80,3 @@ if 'password' not in creds:
     creds['password'] = getpass.getpass()
 
 tan = tanrest.server(creds, quiet=False, debug=debug, keepcreds=False)
-# tan.quiet = False
-# tan.quiet = False
-# tan.debug = debug
-
-#pp(tan)
-
-# import code
-# code.interact(local=locals())
-
-for question in tan.get_saved_questions():
-    if 'id' in question:
-        pp({
-            'id': question['id'],
-            'name': question['name'],
-            'query_text': question['query_text'],
-            'url': 'https://' + tan.server.split("/")[2] + '/interact/sq/' + str(question['id'])
-        })

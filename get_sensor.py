@@ -83,10 +83,15 @@ def main(argv):
 
     tan = tanrest.server(creds)
 
-    #print(tan.get_session())
-   
     sensor = tan.get_sensor(sensorname)
 
+    ##
+    # replace windows carriage return with standard newline for non-windows platform scripts.
+    #  this is a workaround for a tanium UI bug introduced sometime around console version 2.1.702.000
+    for script in sensor["queries"]:
+        if script["platform"] != "Windows":
+            script["script"] = script["script"].replace('\r\n', '\n')
+    
     if not sensor:
         print('error getting sensor')
         sys.exit(3)
