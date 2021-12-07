@@ -55,7 +55,7 @@ class server():
 		if not self.get_session():
 			sys.exit('Authentication failure')
 		atexit.register(self.logout)
-		#self.saved = [i['id'] for i in self.req('get', 'saved_questions')['data'] if 'id' in i]
+		self.saved = [i['id'] for i in self.req('get', 'saved_questions')['data'] if 'id' in i]
 		##
 		# disable warnings after the first requests to ensure it gets displayed at least once 
 		# before being supressed.
