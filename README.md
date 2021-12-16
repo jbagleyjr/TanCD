@@ -51,4 +51,3 @@ Tanium content assuming that you invoke the commands from the parent directory. 
 ## Check a sensor
 `python3 TanCD/check_sensor.py --sensor "<your new sensor>"`
 
-
