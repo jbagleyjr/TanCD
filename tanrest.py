@@ -273,6 +273,10 @@ class server():
 		else:
 			return action_id
 
+	def get_saved_action(self,action_id):
+		action = self.req('GET', 'saved_actions/' + str(action_id))["data"]
+		return action
+
 	def get_action_results(self,action_id):
 		action = self.req('GET', 'actions/' + str(action_id))["data"]
 		expiration_time = parser.parse(action["expiration_time"])

@@ -80,3 +80,36 @@ if 'password' not in creds:
     creds['password'] = getpass.getpass()
 
 tan = tanrest.server(creds, quiet=False, debug=debug, keepcreds=False)
+
+qid = 144122
+
+info = tan.get_saved_question_results(qid)
+
+vulnapps = {}
+vulnhashes = []
+vulnfiles = []
+
+count = 0
+
+for result in info["result_sets"]:
+    for row in result["rows"]:
+        try:
+            result = json.loads(row['data'][3][0]['text'])
+        except:
+            continue
+
+        fullpath = result['properties']['fullpath']
+        thishash = result['properties']['md5']
+
+        count = count + 1
+        if thishash not in vulnapps.keys():
+            vulnapps[thishash] = [fullpath]
+
+        if fullpath not in vulnapps[thishash]:
+            vulnapps[thishash].append(fullpath)
+        
+        if fullpath not in vulnfiles:
+            vulnfiles.append(fullpath)
+
+        if thishash not in vulnhashes:
+            vulnhashes.append(thishash)

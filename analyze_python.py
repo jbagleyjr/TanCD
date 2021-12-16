@@ -23,7 +23,7 @@ warncount=0
 
 analyze = {
     'Python': {
-        'command': '/usr/bin/pylint',
+        'command': '/usr/bin/pylint-3',
         'arguments': '<%file>',
         'hashbang': 'python',
         'suffix': '.py'
