@@ -118,11 +118,19 @@ def main(argv):
                 }				
             ]           
        },
-        "expire_seconds" : 900
+        "expire_seconds" : 900,
+        "issue_seconds": 7200
     }
 
-    action = tan.run_action(action_spec,get_results = True)
+    # action = tan.run_action(action_spec,get_results = True)
 
+    # pp(action)
+    action_id = tan.get_scheduled_action_id(action_spec['name'])
+    while action_id:
+        action_id = tan.get_scheduled_action_id(action_spec['name'])
+        delete = tan.delete_scheduled_action(action_id)
+
+    action = tan.schedule_action(action_spec,get_results = True)
     pp(action)
 
 if __name__ == "__main__":
