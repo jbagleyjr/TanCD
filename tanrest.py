@@ -256,6 +256,8 @@ class server():
 
 	def run_action(self,action_spec,get_results = False):
 		action = self.req('POST', 'actions/', action_spec)
+		if self.debug:
+			pp(action)
 		action_id = action["data"]["id"]
 		expire_seconds = action["data"]["expire_seconds"]
 		if self.debug:
@@ -556,6 +558,10 @@ class server():
 		
 		return self.ask_question(question)
 
+	def parse_question(self,question_text):
+		question_result = self.req('POST', 'parse_question', {'text': question_text})
+		return question_result
+
 	def ask_question(self,question):
 		question_result = self.req('POST', 'questions/', question)
 		return question_result['data']['id']
@@ -571,6 +577,10 @@ class server():
 	def get_saved_questions(self):
 		questions = self.req('GET', 'saved_questions')
 		return questions['data']
+
+	def get_saved_question(self,qid):
+		question = self.req('GET', 'saved_questions/' + str(qid))
+		return question['data']
 
 	def make_results_html(self,data):
 		output="<table><tr>\n "

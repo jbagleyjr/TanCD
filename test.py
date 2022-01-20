@@ -81,35 +81,17 @@ if 'password' not in creds:
 
 tan = tanrest.server(creds, quiet=False, debug=debug, keepcreds=False)
 
-qid = 144122
+question_info = tan.get_saved_question(118613)
 
-info = tan.get_saved_question_results(qid)
+print('original question text is: ' + question_info['query_text'])
 
-vulnapps = {}
-vulnhashes = []
-vulnfiles = []
+print('url for original saved question is: https://tanium.wv.mentorg.com/#/interact/sq/118613')
 
-count = 0
+modified_question = tan.parse_question(question_info['query_text'] + ' with DISW Division equals ICVS')
 
-for result in info["result_sets"]:
-    for row in result["rows"]:
-        try:
-            result = json.loads(row['data'][3][0]['text'])
-        except:
-            continue
+print('modified question text is: ' + question_info['query_text'] + ' with DISW Division equals ICVS')
 
-        fullpath = result['properties']['fullpath']
-        thishash = result['properties']['md5']
+modified_question_id = tan.ask_question(modified_question['data'][0])
 
-        count = count + 1
-        if thishash not in vulnapps.keys():
-            vulnapps[thishash] = [fullpath]
+print('url for modified question is: https://tanium.wv.mentorg.com/#/interact/q/' + str(modified_question_id))
 
-        if fullpath not in vulnapps[thishash]:
-            vulnapps[thishash].append(fullpath)
-        
-        if fullpath not in vulnfiles:
-            vulnfiles.append(fullpath)
-
-        if thishash not in vulnhashes:
-            vulnhashes.append(thishash)
