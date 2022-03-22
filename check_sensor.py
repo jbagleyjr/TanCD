@@ -10,13 +10,12 @@ from time import sleep
 import getpass
 import getopt
 import tempfile
-
+import re
 import subprocess
-
 import configparser
 
 config = configparser.ConfigParser()
-config.readfp(open('content.cfg'))
+config.read_file(open('content.cfg'))
 
 def usage():
     print("""
@@ -35,6 +34,32 @@ def usage():
         ./check_sensor.py --sensor 'Chuck Norris Fact'
 
     """)
+
+def valid_chars(string):
+    characherRegex = re.compile(r'[^a-zA-Z0-9\ \-]')
+    string = characherRegex.search(string)
+    return not bool(string)
+
+def invalid_words(string):
+    words = [
+        'get',
+        'and',
+        'from',
+        'machines',
+        'with',
+        'equal',
+        'contain',
+        'matches'
+    ]
+    invalid = []
+    for word in words:
+        if word in string.lower().split(" "):
+            invalid.append(word)
+
+    if len(invalid) == 0:
+        return False
+    else:
+        return invalid
 
 def main(argv):
     #print(argv)
@@ -74,6 +99,14 @@ def main(argv):
 
     warnmessage="\n\nSensor '" + sensor["name"] + "' has warnings"
     warncount=0
+
+    if not valid_chars(sensor["name"]):
+        failmessage+="\n\nSensor name contains invalid characters.  Only alphanumeric, spaces and dashes are allowed."
+        failurecount+=1
+
+    if invalid_words(sensor["name"]):
+        failmessage+="\n\nSensor name contains invalid words (" + ",".join(invalid_words(sensor["name"])) + ")."
+        failurecount+=1
 
     #config.getint('sensor','minimum_max_age')
     if config.getint('sensor','minimum_max_age') > sensor["max_age_seconds"]:
