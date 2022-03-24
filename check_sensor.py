@@ -49,6 +49,7 @@ def invalid_words(string):
         'with',
         'equal',
         'contain',
+        'contains',
         'matches'
     ]
     invalid = []
