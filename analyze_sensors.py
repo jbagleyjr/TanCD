@@ -127,14 +127,18 @@ def main(argv):
                 command = analyze[script_type]["command"] + " " + analyze[script_type]["arguments"]
                 command = command.replace('<%file>', f.name)
 
-                analysis = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=120)
+                analysis = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
                 if script_type == 'UnixShell':
                     if analysis.wait() != 0:
                         os.remove(f.name)
                         fail(sensor,script,output + "\n" + analysis.communicate()[0].decode())
                 elif script_type == 'Powershell':
 
-                    analysis.wait()
+                    ## Temporarily remove the waiting for child process and instead just sleep for 30 seconds.
+                    ## not optimal solution, but suspect MS Defender is preventing child threads from cleaning
+                    ## up correctly and causes wait to hang indefinitely.
+                    # analysis.wait()
+                    sleep(30)
 
                     output = analysis.communicate()[0].decode()
                     os.remove(f.name)
