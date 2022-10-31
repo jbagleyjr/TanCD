@@ -127,13 +127,15 @@ def main(argv):
                 command = analyze[script_type]["command"] + " " + analyze[script_type]["arguments"]
                 command = command.replace('<%file>', f.name)
 
-                analysis = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                analysis = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=120)
                 if script_type == 'UnixShell':
                     if analysis.wait() != 0:
                         os.remove(f.name)
                         fail(sensor,script,output + "\n" + analysis.communicate()[0].decode())
                 elif script_type == 'Powershell':
+
                     analysis.wait()
+
                     output = analysis.communicate()[0].decode()
                     os.remove(f.name)
                     if 'Error' in output:
