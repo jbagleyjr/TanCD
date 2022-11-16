@@ -28,6 +28,7 @@ def usage():
         -s --server     [required] tanium server (ip address or dns name) [required]
         --username      user name to connect to tanium with (defaults to logged in user)
         --password      password to connect to tanium with (will prompt if not provided)
+        --persona       [optional] the persona to use for the session
 
     Example:
         python3 -i test.py --server 139.181.111.21 --username user123
@@ -40,7 +41,7 @@ global loglevel
 creds = {}
 
 try:
-    opts, args = getopt.getopt(argv,"dhs:",["debug","help","server=", "username=", "password="])
+    opts, args = getopt.getopt(argv,"dhs:",["debug","help","server=", "username=", "password=", "persona="])
 except getopt.GetoptError:
     usage()
     sys.exit(2)
@@ -62,7 +63,9 @@ for opt, arg in opts:
     if opt in ('--username'):
         creds['username'] = arg
     if opt in ('--password'):
-        creds['password'] = arg    
+        creds['password'] = arg
+    if opt in ('--persona'):
+        creds['persona'] = arg
 
 if 'server' not in creds:
     print("--server parameter required")

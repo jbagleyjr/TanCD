@@ -4,7 +4,6 @@
 # Copyright 2019 Mentor Graphics
 # SPDX-License-Identifier: Apache-2.0
 
-
 from requests import Request, Session
 from pprint import pprint as pp
 import time, json, atexit, re
@@ -68,9 +67,31 @@ class server():
 		resp = self.s.send(r, verify=False)
 		if self.debug:
 			pp(vars(resp))
+
 		if resp.status_code == 200:
 			self.session_id = (resp.json()['data']['session'])
 			self.session_time = time.time()
+			if 'persona' in self.creds:
+				userinfo = self.req('GET', '/users/by-name/' + self.creds['username'])
+
+				self.creds['persona_id']=False
+				for persona in userinfo['data']['personas']:
+						if persona['name'] == self.creds['persona']:
+								self.creds['persona_id']=persona['id']
+								break
+				if not self.creds['persona_id']:
+					print('\nPersona provided but not found, available personas are:')
+					for persona in userinfo['data']['personas']:
+							print('  ' + persona['name'])
+					print('')
+					return False
+				else:
+					persona_resp = self.req('POST', '/session/as_persona/' + str(self.creds['persona_id']))
+					if persona_resp:
+						self.session_id = (persona_resp['data']['session'])
+					else:
+						return False
+
 			if not self.keepcreds:
 				del self.creds
 			return True
