@@ -24,6 +24,7 @@ def usage():
         --server        [required] tanium server (ip address or dns name) [required]
         --username      user name to connect to tanium with (defaults to logged in user)
         --password      password to connect to tanium with (will prompt if not provided)
+        --persona       [optional] the persona to use for the session
 
     Example:
         ./get_sensor.py --server 139.181.111.21 --username tanium --sensor 'Chuck Norris Fact'
@@ -36,7 +37,7 @@ def main(argv):
     creds = {}
 
     try:
-        opts, args = getopt.getopt(argv,"d:hs:p:q:",["debug:","help","sensor=", "package=", "server=", "username=", "password="])
+        opts, args = getopt.getopt(argv,"d:hs:p:q:",["debug:","help","sensor=", "package=", "server=", "username=", "password=", "persona="])
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -55,6 +56,8 @@ def main(argv):
             creds['username'] = arg
         if opt in ('--password'):
             creds['password'] = arg    
+        if opt in ('--persona'):
+            creds['persona'] = arg
 
     try:
         sensorname

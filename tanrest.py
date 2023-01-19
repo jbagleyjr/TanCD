@@ -163,6 +163,13 @@ class server():
 		else:
 			return False
 
+	def get_package_file_details(self, packagename):
+		package = self.req('GET', 'packages/by-name/' + packagename)
+		if package:
+			if "files" in package["data"]:
+				return package["data"]["files"]
+		return False
+
 	def get_package_id(self, packagename):
 		package = self.req('GET', 'packages/by-name/' + packagename)
 		if package:

@@ -24,6 +24,7 @@ def usage():
         --server        [required] tanium server (ip address or dns name) [required]
         --username      user name to connect to tanium with (defaults to logged in user)
         --password      password to connect to tanium with (will prompt if not provided)
+        --persona       [optional] the persona to use for the session
 
     Example:
         ./get_package.py --server 139.181.111.21 --username tanium --package 'MGC Puppet Apply Linux'
@@ -36,7 +37,7 @@ def main(argv):
     creds = {}
 
     try:
-        opts, args = getopt.getopt(argv,"d:hs:p:q:",["debug:","help","sensor=", "package=", "server=", "username=", "password="])
+        opts, args = getopt.getopt(argv,"d:hs:p:q:",["debug:","help","sensor=", "package=", "server=", "username=", "password=", "persona="])
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -54,7 +55,9 @@ def main(argv):
         if opt in ('--username'):
             creds['username'] = arg
         if opt in ('--password'):
-            creds['password'] = arg    
+            creds['password'] = arg
+        if opt in ('--persona'):
+            creds['persona'] = arg
 
     try:
         packagename
@@ -85,6 +88,22 @@ def main(argv):
 
     package = tan.get_package(packagename)
 
+    downloadfiles=False
+    for packagefile in package['files']:
+        if not packagefile['source'].startswith('https'):
+            print('need to download package file')
+            pp(packagefile)
+            downloadfiles=True
+
+# https://tanium-test.wv.mentorg.com/cache/f45a5f9f5bfaaf9b23d2605d2767aae72f7167de2037cce95473d9ab1bdd0975
+    if downloadfiles:
+        packagefiles = tan.get_package_file_details(packagename)
+        # pp(packagefiles)
+        for packagefile in packagefiles:
+            print('https://tanium-test.wv.mentorg.com/cache/' + packagefile['hash'])
+            print(packagefile['name'])
+
+    # pp(package)
     if not package:
         print('error getting package')
         sys.exit(3)
