@@ -4,9 +4,10 @@
 # Copyright 2019 Mentor Graphics
 # SPDX-License-Identifier: Apache-2.0
 
-import tanrest, json, time, sys, base64
+import tanrest, json, time, sys, base64, os
 from pprint import pprint as pp
 from time import sleep
+from requests import get
 import getpass
 import getopt
 
@@ -30,6 +31,14 @@ def usage():
         ./get_package.py --server 139.181.111.21 --username tanium --package 'MGC Puppet Apply Linux'
 
     """)
+
+def download(url, file_name):
+    # open in binary mode
+    with open(file_name, "wb") as file:
+        # get request
+        response = get(url)
+        # write to file
+        file.write(response.content)
 
 def main(argv):
     #print(argv)
@@ -97,11 +106,15 @@ def main(argv):
 
 # https://tanium-test.wv.mentorg.com/cache/f45a5f9f5bfaaf9b23d2605d2767aae72f7167de2037cce95473d9ab1bdd0975
     if downloadfiles:
+        if not os.path.exists('package/' + packagename):
+            os.mkdir('package/' + packagename)
+
         packagefiles = tan.get_package_file_details(packagename)
         # pp(packagefiles)
         for packagefile in packagefiles:
             print('https://tanium-test.wv.mentorg.com/cache/' + packagefile['hash'])
-            print(packagefile['name'])
+            print(packagename + "/" + packagefile['name'])
+            download('https://tanium-test.wv.mentorg.com/cache/' + packagefile['hash'], 'package/' + packagename + "/" + packagefile['name'])
 
     # pp(package)
     if not package:

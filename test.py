@@ -82,19 +82,22 @@ if 'username' not in creds:
 if 'password' not in creds:
     creds['password'] = getpass.getpass()
 
+creds['apikey'] = "token-6d49913d52db254b45e305a81ba6f840efcba61dba21ad5e11e95dc41b"
+
 tan = tanrest.server(creds, quiet=False, debug=debug, keepcreds=False)
 
-question_info = tan.get_saved_question(118613)
+# question_info = tan.get_saved_question(118613)
 
-print('original question text is: ' + question_info['query_text'])
+# print('original question text is: ' + question_info['query_text'])
 
-print('url for original saved question is: https://tanium.wv.mentorg.com/#/interact/sq/118613')
+# print('url for original saved question is: https://tanium.wv.mentorg.com/#/interact/sq/118613')
 
-modified_question = tan.parse_question(question_info['query_text'] + ' with DISW Division equals ICVS')
+# modified_question = tan.parse_question(question_info['query_text'] + ' with DISW Division equals ICVS')
 
-print('modified question text is: ' + question_info['query_text'] + ' with DISW Division equals ICVS')
+# print('modified question text is: ' + question_info['query_text'] + ' with DISW Division equals ICVS')
 
-modified_question_id = tan.ask_question(modified_question['data'][0])
+# modified_question_id = tan.ask_question(modified_question['data'][0])
 
-print('url for modified question is: https://tanium.wv.mentorg.com/#/interact/q/' + str(modified_question_id))
+# print('url for modified question is: https://tanium.wv.mentorg.com/#/interact/q/' + str(modified_question_id))
 
+print('session id is ' + tan.session_id)
