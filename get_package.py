@@ -98,11 +98,12 @@ def main(argv):
     package = tan.get_package(packagename)
 
     downloadfiles=False
-    for packagefile in package['files']:
-        if not packagefile['source'].startswith('https'):
-            print('need to download package file')
-            pp(packagefile)
-            downloadfiles=True
+    if 'files' in package:
+        for packagefile in package['files']:
+            if not packagefile['source'].startswith('https'):
+                print('need to download package file')
+                pp(packagefile)
+                downloadfiles=True
 
 # https://tanium-test.wv.mentorg.com/cache/f45a5f9f5bfaaf9b23d2605d2767aae72f7167de2037cce95473d9ab1bdd0975
     if downloadfiles:
