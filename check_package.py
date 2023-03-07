@@ -83,7 +83,7 @@ def main(argv):
             # if 'source' not in file:
             #     failmessage+="\n\nPackage files must be remote files, not local files."
             #     failurecount+=1
-            if 'source' in file:
+            if 'source' in file and len(file['source']) > 0:
                 if file["download_seconds"] > int(config.get('package','max_download_seconds')):
                     failmessage+="\n\nFile (" + file["name"] + ") exceeds max download seconds."
                     failmessage+="\n Set 'Check for update' to " + config.get('package', 'max_download_seconds') + " seconds or less."
