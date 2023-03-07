@@ -87,6 +87,8 @@ def main(argv):
             creds['server'] = 'https://' + creds['server']
         if '/api/v2' not in creds['server']:
             creds['server'] = creds['server'] + '/api/v2'
+        
+        server = creds['server'].split('/')[2]
 
     if 'username' not in creds:
         creds['username'] = getpass.getuser()
@@ -113,9 +115,10 @@ def main(argv):
         packagefiles = tan.get_package_file_details(packagename)
         # pp(packagefiles)
         for packagefile in packagefiles:
-            print('https://tanium-test.wv.mentorg.com/cache/' + packagefile['hash'])
+            print('downloading file...')
+            print('https://' + server + '/cache/' + packagefile['hash'])
             print(packagename + "/" + packagefile['name'])
-            download('https://tanium-test.wv.mentorg.com/cache/' + packagefile['hash'], 'package/' + packagename + "/" + packagefile['name'])
+            download('https://' + server + '/cache/' + packagefile['hash'], 'package/' + packagename + "/" + packagefile['name'])
 
     # pp(package)
     if not package:

@@ -110,22 +110,75 @@ def main(argv):
     
 
     i=0
+    localfiles = []
     for file in package["files"]:
+        ##
+        # handle the commit hash file
         if 'commit=' in file["name"]:
             del package["files"][i]
-        elif branch:
-            if "https://itgitlab.wv.mentorg.com/Tanium/tanium-content/raw/" in file["source"]:
-                filearray=file["source"].split("/")
-                filearray[6]=branch
-                package["files"][i]["source"]="/".join(filearray)
+
+        ##
+        # handler for remote files with a URL source
+        elif 'source' in file:
+            if branch:
+                if "https://itgitlab.wv.mentorg.com/Tanium/tanium-content/raw/" in file["source"]:
+                    filearray=file["source"].split("/")
+                    filearray[6]=branch
+                    package["files"][i]["source"]="/".join(filearray)
+        ##
+        # what's left is the local package files
+        else:
+            localfile = 'package/' + packagename + '/' + file['name']
+            if not os.path.exists(localfile):
+                print("file does not exist: " + localfile)
+                sys.exit(1)
+
+            with open(localfile, 'rb') as fd:
+                file_b64data = base64.b64encode(fd.read()).decode('ascii')
+
+            file_data = {
+                'bytes': file_b64data,
+                'file_size': os.stat(localfile).st_size,
+                'force_overwrite': 1
+                #'start_pos': 0,
+                #'part_size': os.stat(filepath).st_size
+            }
+
+            ##
+            # TODO: handling chunking and sending file parts if the files get too large.
+
+            file_obj = tan.req('POST', 'upload_file', data=file_data)
+            pp(file_obj)
+
+            file_hash = file_obj['data']['upload_file']['hash']
+
+            sleep(1)
+            file_status = tan.req('GET', 'upload_file/' + str(file_obj['data']['upload_file']['id']))
+
+            pp(file_status['data']['upload_file_status']['file_cached'])
+
+            localfiles.append({
+                    'name': localfile.split('/')[-1],
+                    'hash': file_hash
+                }
+            )
+            del package["files"][i]
+
         i=i+1
 
-        commithashtag = {
-            '_type': 'file',
-            'name': "commit="+git_revision_hash(),
-            'download_seconds': 3600,
-            'source': 'https://itgitlab.wv.mentorg.com/Tanium/tanium-content/raw/master/package_files/empty.txt'
-        }
+        
+    commithashtag = {
+        '_type': 'file',
+        'name': "commit="+git_revision_hash(),
+        'download_seconds': 3600,
+        'source': 'https://itgitlab.wv.mentorg.com/Tanium/tanium-content/raw/master/package_files/empty.txt'
+    }
+
+    package["files"].append(commithashtag)
+
+    if len(localfiles) > 0:
+        for localfile in localfiles:
+            package["files"].append(localfile)
 
     ##
     # Force setting the process group flag.

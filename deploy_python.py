@@ -119,7 +119,7 @@ def main(argv):
             ]           
        },
         "expire_seconds" : 900,
-        "issue_seconds": 7200
+        "issue_seconds": 3600
     }
 
     # action = tan.run_action(action_spec,get_results = True)
