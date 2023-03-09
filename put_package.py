@@ -108,27 +108,35 @@ def main(argv):
     package_id = tan.get_package_id(packagename)
     tan.quiet = False
     
-
     i=0
-    localfiles = []
-    for file in package["files"]:
+    packagefiles = []    
+    for packagefile in package["files"]:
+        print("\n")
+        print('processing file ' + str(i))
+        pp(package['files'][i])
+        print('hello world')
         ##
         # handle the commit hash file
-        if 'commit=' in file["name"]:
-            del package["files"][i]
+        if 'commit=' in packagefile["name"]:
+            print('remove commit file')
+            continue
+            # del package["files"][i]
 
         ##
         # handler for remote files with a URL source
-        elif 'source' in file and file['source']:
+        elif 'source' in packagefile and packagefile['source']:
+            print('checking branch')
             if branch:
                 if "https://itgitlab.wv.mentorg.com/Tanium/tanium-content/raw/" in file["source"]:
-                    filearray=file["source"].split("/")
+                    filearray=packagefile["source"].split("/")
                     filearray[6]=branch
-                    package["files"][i]["source"]="/".join(filearray)
+                    packagefile["source"]="/".join(filearray)
+                    packagefiles.append(packagefile)
         ##
         # what's left is the local package files
         else:
-            localfile = 'package/' + packagename + '/' + file['name']
+            localfile = 'package/' + packagename + '/' + packagefile['name']
+            print('Uploading package file: ' + localfile)
             if not os.path.exists(localfile):
                 print("file does not exist: " + localfile)
                 sys.exit(1)
@@ -157,7 +165,7 @@ def main(argv):
 
             pp(file_status['data']['upload_file_status']['file_cached'])
 
-            localfiles.append({
+            packagefiles.append({
                     'name': localfile.split('/')[-1],
                     'hash': file_hash
                 }
@@ -165,10 +173,11 @@ def main(argv):
             # local file references are added after they are hashed so we need
             # to remove the empty reference from the json import and use the 
             # hash from the tanium server instead.
-            del package["files"][i]
+            # del package["files"][i]
 
         i=i+1
 
+    package['files'] = packagefiles
         
     commithashtag = {
         '_type': 'file',
@@ -178,12 +187,6 @@ def main(argv):
     }
 
     package["files"].append(commithashtag)
-
-    # add the uploaded localfile references with hashes so Tanium can associate the 
-    # package to the files that were uploaded.
-    if len(localfiles) > 0:
-        for localfile in localfiles:
-            package["files"].append(localfile)
 
     ##
     # Force setting the process group flag.
