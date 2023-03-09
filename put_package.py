@@ -4,7 +4,7 @@ from pprint import pprint as pp
 from time import sleep
 import getpass
 import getopt
-
+import os
 import subprocess
 
 import configparser
@@ -119,7 +119,7 @@ def main(argv):
 
         ##
         # handler for remote files with a URL source
-        elif 'source' in file:
+        elif 'source' in file and file['source']:
             if branch:
                 if "https://itgitlab.wv.mentorg.com/Tanium/tanium-content/raw/" in file["source"]:
                     filearray=file["source"].split("/")
@@ -162,6 +162,9 @@ def main(argv):
                     'hash': file_hash
                 }
             )
+            # local file references are added after they are hashed so we need
+            # to remove the empty reference from the json import and use the 
+            # hash from the tanium server instead.
             del package["files"][i]
 
         i=i+1
@@ -176,6 +179,8 @@ def main(argv):
 
     package["files"].append(commithashtag)
 
+    # add the uploaded localfile references with hashes so Tanium can associate the 
+    # package to the files that were uploaded.
     if len(localfiles) > 0:
         for localfile in localfiles:
             package["files"].append(localfile)

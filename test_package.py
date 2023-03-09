@@ -31,6 +31,7 @@ def usage():
         --server        [required] tanium server (ip address or dns name) [required]
         --username      user name to connect to tanium with (defaults to logged in user)
         --password      password to connect to tanium with (will prompt if not provided)
+        --persona       [optional] the persona to use for the session
 
     Example:
         ./test_package.py --server 139.181.111.21 --username tanium --package 'MGC Puppet Check Linux'
@@ -50,7 +51,7 @@ def main(argv):
     creds = {}
 
     try:
-        opts, args = getopt.getopt(argv,"d:hs:p:q:",["debug:","help","sensor=", "package=", "server=", "username=", "password="])
+        opts, args = getopt.getopt(argv,"d:hs:p:q:",["debug:","help","sensor=", "package=", "server=", "username=", "password=", "persona="])
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -69,6 +70,8 @@ def main(argv):
             creds['username'] = arg
         if opt in ('--password'):
             creds['password'] = arg    
+        if opt in ('--persona'):
+            creds['persona'] = arg
 
     try:
         packagename
@@ -167,13 +170,15 @@ def main(argv):
     #}
 
     #action_spec["package_spec"]["parameters"].append(addparam)
-    #pp(action_spec)
-    #sys.exit(0)
+    pp(action_spec)
+    # sys.exit(0)
     #action = tan.req('POST', 'actions/', action_spec)
+    # tan.debug = True
     action = tan.run_action(action_spec,get_results = True)
-    #pp(action["action_id"])
+    # pp(action["action_id"])
+    # pp(action)
 
-    #sys.exit(0)
+    # sys.exit(0)
 
     packageoutput="<h2>" + packagename + " output:</h2> \n"
 
