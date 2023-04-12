@@ -4,7 +4,7 @@ from pprint import pprint as pp
 from time import sleep
 import getpass
 import getopt
-import os
+
 import subprocess
 
 import configparser
@@ -44,7 +44,7 @@ def main(argv):
     creds = {}
 
     try:
-        opts, args = getopt.getopt(argv,"d:hs:p:q:b:",["debug:","help","sensor=", "package=", "branch=", "server=", "username=", "password="])
+        opts, args = getopt.getopt(argv,"d:hs:p:q:b:",["debug:","help","sensor=", "package=", "branch=", "server=", "username=", "password=", "persona="])
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -67,6 +67,8 @@ def main(argv):
             creds['username'] = arg
         if opt in ('--password'):
             creds['password'] = arg    
+        if opt in ('--persona'):
+            creds['persona'] = arg
 
     try:
         packagename
@@ -108,35 +110,29 @@ def main(argv):
     package_id = tan.get_package_id(packagename)
     tan.quiet = False
     
+
     i=0
-    packagefiles = []    
-    for packagefile in package["files"]:
-        print("\n")
-        print('processing file ' + str(i))
-        pp(package['files'][i])
-        print('hello world')
+    localfiles = []
+    print("\npackage files definition before manipulation")
+    pp(package["files"])
+    for file in package["files"]:
         ##
         # handle the commit hash file
-        if 'commit=' in packagefile["name"]:
-            print('remove commit file')
-            continue
-            # del package["files"][i]
+        if 'commit=' in file["name"]:
+            del package["files"][i]
 
         ##
         # handler for remote files with a URL source
-        elif 'source' in packagefile and packagefile['source']:
-            print('checking branch')
+        elif 'source' in file:
             if branch:
                 if "https://itgitlab.wv.mentorg.com/Tanium/tanium-content/raw/" in file["source"]:
-                    filearray=packagefile["source"].split("/")
+                    filearray=file["source"].split("/")
                     filearray[6]=branch
-                    packagefile["source"]="/".join(filearray)
-                    packagefiles.append(packagefile)
+                    package["files"][i]["source"]="/".join(filearray)
         ##
         # what's left is the local package files
         else:
-            localfile = 'package/' + packagename + '/' + packagefile['name']
-            print('Uploading package file: ' + localfile)
+            localfile = 'package/' + packagename + '/' + file['name']
             if not os.path.exists(localfile):
                 print("file does not exist: " + localfile)
                 sys.exit(1)
@@ -165,19 +161,15 @@ def main(argv):
 
             pp(file_status['data']['upload_file_status']['file_cached'])
 
-            packagefiles.append({
+            localfiles.append({
                     'name': localfile.split('/')[-1],
                     'hash': file_hash
                 }
             )
-            # local file references are added after they are hashed so we need
-            # to remove the empty reference from the json import and use the 
-            # hash from the tanium server instead.
-            # del package["files"][i]
+            del package["files"][i]
 
         i=i+1
 
-    package['files'] = packagefiles
         
     commithashtag = {
         '_type': 'file',
@@ -187,6 +179,14 @@ def main(argv):
     }
 
     package["files"].append(commithashtag)
+
+    if len(localfiles) > 0:
+        for localfile in localfiles:
+            package["files"].append(localfile)
+
+    print("\npackage files definition after manipulation")
+    pp(package["files"])
+    print("\n\n")
 
     ##
     # Force setting the process group flag.
