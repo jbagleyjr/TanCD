@@ -115,24 +115,34 @@ def main(argv):
     localfiles = []
     print("\npackage files definition before manipulation")
     pp(package["files"])
-    for file in package["files"]:
+    print("\nThere are " + str(len(package["files"])) + " files to process")
+    # for file in package["files"]:
+    pp(package["files"][0])
+    newfiles = []
+    for i in range(len(package["files"])):
+        print("\n")
+        print("processing " + package["files"][i]["name"])
         ##
         # handle the commit hash file
-        if 'commit=' in file["name"]:
-            del package["files"][i]
+        if 'commit=' in package["files"][i]["name"]:
+            print("detected commit")
+            # del package["files"][i]
 
         ##
         # handler for remote files with a URL source
-        elif 'source' in file and file['source'] != '':
+        elif 'source' in package["files"][i] and package["files"][i]['source'] != '':
+            print("detected remote file")
             if branch:
                 if "https://itgitlab.wv.mentorg.com/Tanium/tanium-content/raw/" in file["source"]:
-                    filearray=file["source"].split("/")
+                    filearray=package["files"][i]["source"].split("/")
                     filearray[6]=branch
                     package["files"][i]["source"]="/".join(filearray)
+            newfiles.append(package["files"][i])
         ##
         # what's left is the local package files
         else:
-            localfile = 'package/' + packagename + '/' + file['name']
+            print("handle local file")
+            localfile = 'package/' + packagename + '/' + package["files"][i]['name']
             if not os.path.exists(localfile):
                 print("file does not exist: " + localfile)
                 sys.exit(1)
@@ -150,7 +160,7 @@ def main(argv):
 
             ##
             # TODO: handling chunking and sending file parts if the files get too large.
-
+            print('uploading file')
             file_obj = tan.req('POST', 'upload_file', data=file_data)
             pp(file_obj)
 
@@ -161,16 +171,17 @@ def main(argv):
 
             pp(file_status['data']['upload_file_status']['file_cached'])
 
-            localfiles.append({
+            newfiles.append({
                     'name': localfile.split('/')[-1],
                     'hash': file_hash
                 }
             )
-            del package["files"][i]
+            # del package["files"][i]
 
         i=i+1
 
-        
+    package["files"] = newfiles
+
     commithashtag = {
         '_type': 'file',
         'name': "commit="+git_revision_hash(),
