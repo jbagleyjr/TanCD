@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import tanrest, json, time, sys, base64
+import tanrest, json, time, sys, base64, os
 from pprint import pprint as pp
 from time import sleep
 import getpass
@@ -123,7 +123,7 @@ def main(argv):
 
         ##
         # handler for remote files with a URL source
-        elif 'source' in file:
+        elif 'source' in file and file['source'] != '':
             if branch:
                 if "https://itgitlab.wv.mentorg.com/Tanium/tanium-content/raw/" in file["source"]:
                     filearray=file["source"].split("/")
