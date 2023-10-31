@@ -114,16 +114,16 @@ def main(argv):
         #failmessage+=content["sensor"][0]["name"] + " failed testing!"
         failmessage+="\n\nYou must set the 'Max Age' to be more than " + config.get('sensor','minimum_max_age') + " seconds."
         failurecount+=1
-
-	prefixtest=False
-	for prefix in config.get('sensor','category_prefix').split(","):
-		if sensor["category"].startswith(prefix):
-			prefixtest=True
-
-	if not prefixtest:
-		failmessage+="\n\nTo avoid confusion betwen Siemens DISW developed content and Tanium provided content, please prefix the content category with '"
-		failmessage+=config.get('sensor','category_prefix') + "'"
-		failurecount+=1
+    
+    prefixtest=False
+    for prefix in config.get('sensor','category_prefix').split(","):
+        if sensor["category"].startswith(prefix):
+            prefixtest=True
+    
+    if not prefixtest:
+        failmessage+="\n\nTo avoid confusion betwen Siemens DISW developed content and Tanium provided content, please prefix the content category with '"
+        failmessage+=config.get('sensor','category_prefix') + "'"
+        failurecount+=1
 
     prefixtest=False
     for prefix in config.get('prefix','name').split(","):
