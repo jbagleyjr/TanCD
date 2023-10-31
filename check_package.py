@@ -105,14 +105,15 @@ def main(argv):
                     failmessage+="\n   - " + "\n   - ".join(config.get('package','remote_file_urls').split(" "))
 
 
-    if not package["name"].startswith(config.get('prefix','name')):
-        if not package["name"].startswith(config.get('prefix','warn_name')):
-            failmessage+="\n\nTo avoid confusion betwen Siemens DISW developed content and Tanium provided content, please prefix the name with '"
-            failmessage+=config.get('prefix','name') + "'"
-            failurecount+=1
-        else:
-            warnmessage+="\n  deprecated name prefix '" + config.get('prefix','warn_name') + "' should be updated to '" + config.get('prefix', 'name') + "'"
-            warncount+=1
+    prefixtest=False
+    for prefix in config.get('prefix','name').split(","):
+        if package["name"].startswith(prefix):
+            prefixtest=True
+
+    if not prefixtest:
+        failmessage+="\n\nTo avoid confusion betwen Siemens DISW developed content and Tanium provided content, please prefix the name with '"
+        failmessage+=config.get('prefix','name') + "'"
+        failurecount+=1
 
 
     if failurecount != 0:

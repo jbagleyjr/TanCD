@@ -115,25 +115,25 @@ def main(argv):
         failmessage+="\n\nYou must set the 'Max Age' to be more than " + config.get('sensor','minimum_max_age') + " seconds."
         failurecount+=1
 
-    if config.get('prefix','category').lower() not in sensor["category"].lower():
-        if config.get('prefix','warn_category').lower() not in sensor["category"].lower():
-            failmessage+="\n\nTo avoid confusion betwen Siemens DISW developed content and Tanium provided content, please prefix the content category with '"
-            failmessage+=config.get('prefix','category') + "'"
-            failurecount+=1
-        else:
-            warnmessage+="\nSensor uses deprecated category prefix '" + config.get('prefix','warn_category') + "' and should be updated to '" + config.get('prefix','category')
-            warncount+=1
+	prefixtest=False
+	for prefix in config.get('sensor','category_prefix').split(","):
+		if sensor["category"].startswith(prefix):
+			prefixtest=True
 
-    if config.get('prefix','name').lower() not in sensor["name"].lower():
-        if config.get('prefix','warn_name').lower() not in sensor["name"].lower():
-            print(config.get('prefix','warn_name').lower())
-            print(sensor["name"].lower())
-            failmessage+="\n\nTo avoid confusion betwen Siemens DISW developed content and Tanium provided content, please prefix the name with '"
-            failmessage+=config.get('prefix','name') + "'"
-            failurecount+=1
-        else:
-            warnmessage+="\nSensor uses deprecated name prefix '" + config.get('prefix','warn_name') + "' and should be updated to '" + config.get('prefix', 'name')
-            warncount+=1
+	if not prefixtest:
+		failmessage+="\n\nTo avoid confusion betwen Siemens DISW developed content and Tanium provided content, please prefix the content category with '"
+		failmessage+=config.get('sensor','category_prefix') + "'"
+		failurecount+=1
+
+    prefixtest=False
+    for prefix in config.get('prefix','name').split(","):
+        if sensor["name"].startswith(prefix):
+            prefixtest=True
+
+    if not prefixtest:
+        failmessage+="\n\nTo avoid confusion betwen Siemens DISW developed content and Tanium provided content, please prefix the name with '"
+        failmessage+=config.get('prefix','name') + "'"
+        failurecount+=1
 
     for script in sensor["queries"]:
         #print script["script"]
