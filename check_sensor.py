@@ -116,7 +116,7 @@ def main(argv):
         failurecount+=1
     
     prefixtest=False
-    for prefix in config.get('sensor','category_prefix').split(","):
+    for prefix in config.get('prefix','category').split(","):
         if sensor["category"].startswith(prefix):
             prefixtest=True
     
