@@ -1,0 +1,103 @@
+{
+    "content_set": {
+        "id": 2,
+        "name": "Default"
+    },
+    "name": "TanCD Sensor Performance",
+    "string_count": 0,
+    "category": "TanCD",
+    "description": "Gets sensor performance of a sensor.",
+    "queries": [
+        {
+            "platform": "Windows",
+            "script": "get-content c:\\mgctanium\\perf.log -ErrorAction SilentlyContinue",
+            "script_type": "Powershell"
+        },
+        {
+            "platform": "Solaris",
+            "script": "#!/bin/sh\necho \"NA on Solaris\"\n",
+            "script_type": "UnixShell"
+        },
+        {
+            "platform": "AIX",
+            "script": "#!/bin/sh\necho \"NA on AIX\"\n",
+            "script_type": "UnixShell"
+        },
+        {
+            "platform": "Mac",
+            "script": "#!/bin/sh\necho \"NA on Mac\"\n",
+            "script_type": "UnixShell"
+        },
+        {
+            "platform": "Linux",
+            "script": "#!/bin/bash\nunescape() {\n    # decode everything between 0x20-0x7E except:\n    #0 1 2 3 4 5 6 7 8 9 (0x30-0x39)\n    #A B C D E F G H I J K L M N O P Q R S T U V W X Y Z (0x41-0x5A)\n    #a b c d e f g h i j k l m n o p q r s t u v w x y z (0x61-0x7A)\n    echo \"$1\" | sed -e 's/%20/ /g' \\\n    -e 's/%21/!/g' \\\n    -e 's/%22/\"/g' \\\n    -e 's/%23/#/g' \\\n    -e 's/%24/$/g' \\\n    -e 's/%25/%/g' \\\n    -e 's/%26/\\&/g' \\\n    -e \"s/%27/'/g\" \\\n    -e 's/%28/(/g' \\\n    -e 's/%29/)/g' \\\n    -e 's/%2[aA]/*/g' \\\n    -e 's/%2[bB]/+/g' \\\n    -e 's/%2[cC]/,/g' \\\n    -e 's/%2[dD]/-/g' \\\n    -e 's/%2[eE]/./g' \\\n    -e 's#%2[fF]#/#g' \\\n    -e 's/%3[aA]/:/g' \\\n    -e 's/%3[bB]/;/g' \\\n    -e 's/%3[cC]/</g' \\\n    -e 's/%3[dD]/=/g' \\\n    -e 's/%3[eE]/>/g' \\\n    -e 's/%3[fF]/?/g' \\\n    -e 's/%40/@/g' \\\n    -e 's/%5[bB]/[/g' \\\n    -e 's/%5[cC]/\\\\/g' \\\n    -e 's/%5[dD]/]/g' \\\n    -e 's/%5[eE]/^/g' \\\n    -e 's/%5[fF]/_/g' \\\n    -e 's/%60/`/g' \\\n    -e 's/%7[bB]/{/g' \\\n    -e 's/%7[cC]/|/g' \\\n    -e 's/%7[dD]/}/g' \\\n    -e 's/%7[eE]/~/g'\n}\nsensor=$(unescape \"||sensor||\")\n#   export sensor_name=\"sensor performance\"\n#   [ -f /opt/Tanium/TaniumClient/perf/perf.sh ] && . /opt/Tanium/TaniumClient/perf/perf.sh\nif [ -f /opt/Tanium/TaniumClient/perf/perf.log ]\nthen\n\tcat /opt/Tanium/TaniumClient/perf/perf.log | grep \"$sensor\"\nfi\n",
+            "script_type": "UnixShell"
+        }
+    ],
+    "parameter_definition": "{\"parameters\":[{\"parameterType\":\"com.tanium.components.parameters::TextInputParameter\",\"model\":\"com.tanium.components.parameters::TextInputParameter\",\"key\":\"sensor\",\"validationExpressions\":[{\"expression\":\".*\",\"helpString\":\"\",\"model\":\"com.tanium.models::ValidationExpression\",\"parameterType\":\"com.tanium.models::ValidationExpression\"}],\"promptText\":\"enter sensor name\"}],\"model\":\"com.tanium.components.parameters::ParametersArray\",\"parameterType\":\"com.tanium.components.parameters::ParametersArray\"}",
+    "value_type": "String",
+    "max_age_seconds": 600,
+    "ignore_case_flag": true,
+    "hidden_flag": false,
+    "keep_duplicates_flag": false,
+    "delimiter": ";",
+    "subcolumns": [
+        {
+            "name": "date",
+            "index": 0,
+            "value_type": "Numeric",
+            "ignore_case_flag": true,
+            "hidden_flag": false
+        },
+        {
+            "name": "sensor name",
+            "index": 1,
+            "value_type": "String",
+            "ignore_case_flag": true,
+            "hidden_flag": false
+        },
+        {
+            "name": "runtime",
+            "index": 2,
+            "value_type": "Numeric",
+            "ignore_case_flag": true,
+            "hidden_flag": false
+        },
+        {
+            "name": "user time",
+            "index": 3,
+            "value_type": "String",
+            "ignore_case_flag": true,
+            "hidden_flag": false
+        },
+        {
+            "name": "system time",
+            "index": 4,
+            "value_type": "String",
+            "ignore_case_flag": true,
+            "hidden_flag": false
+        },
+        {
+            "name": "user time children",
+            "index": 5,
+            "value_type": "String",
+            "ignore_case_flag": true,
+            "hidden_flag": false
+        },
+        {
+            "name": "system time children",
+            "index": 6,
+            "value_type": "String",
+            "ignore_case_flag": true,
+            "hidden_flag": false
+        },
+        {
+            "name": "exit code",
+            "index": 7,
+            "value_type": "NumericInteger",
+            "ignore_case_flag": true,
+            "hidden_flag": false
+        }
+    ],
+    "source_id": 0
+}

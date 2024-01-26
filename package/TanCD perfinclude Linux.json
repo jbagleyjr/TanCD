@@ -1,0 +1,45 @@
+{
+    "content_set": {
+        "id": 2,
+        "name": "Default"
+    },
+    "name": "TanCD perfinclude Linux",
+    "display_name": "TanCD perfinclude Linux",
+    "command": "/bin/bash install.sh",
+    "command_timeout": 60,
+    "expire_seconds": 660,
+    "verify_expire_seconds": 600,
+    "skip_lock_flag": false,
+    "hidden_flag": false,
+    "process_group_flag": true,
+    "deleted_flag": false,
+    "source_hash": "3f4ae90cdd892a514d9d99ea3ae6d7b53f797ccbf976e4fa1b784143564bd3da",
+    "verify_group_id": 0,
+    "verify_group": {
+        "id": 0
+    },
+    "parameter_definition": "{\"parameters\":[],\"model\":\"com.tanium.components.parameters::ParametersArray\",\"parameterType\":\"com.tanium.components.parameters::ParametersArray\"}",
+    "source_id": 0,
+    "files": [
+        {
+            "name": "perf_action_log_rotate.sh",
+            "source": "",
+            "download_seconds": 0
+        },
+        {
+            "name": "perf_log_rotate.sh",
+            "source": "",
+            "download_seconds": 0
+        },
+        {
+            "name": "install.sh",
+            "source": "",
+            "download_seconds": 0
+        },
+        {
+            "name": "perf.sh",
+            "source": "",
+            "download_seconds": 0
+        }
+    ]
+}

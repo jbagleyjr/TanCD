@@ -1,0 +1,75 @@
+{
+    "content_set": {
+        "id": 2,
+        "name": "Default"
+    },
+    "name": "TanCD Package Performance",
+    "string_count": 0,
+    "category": "TanCD",
+    "description": "Gets performance of a package.",
+    "queries": [
+        {
+            "platform": "Windows",
+            "script": "import os.path\nfrom os import path\nimport tanium\nimport tanium.sensor_io.sensor_input\ntanium_add_results = tanium.results.add\ninputs = tanium.sensor_io.sensor_input.SensorInputs()\ninputs.add_param('actionid', '||actionid||', None)\nactionid = inputs.get_param('actionid')\naction_dir = tanium.client.common.get_client_dir('Downloads')\n#actionid = str(\"31970\")\n#action_dir = \"/opt/Tanium/TaniumClient/Downloads\"\naction_log = action_dir + \"/Action_\" + actionid + \".log\"\nexitcode=0\nif path.exists(action_log):\n  with open(action_log, 'r') as fin:\n    row=fin.readline()\n    while row:\n        if \"|Package Name: \" in row:\n            packagename=row.split(\"|Package Name: \")[1].strip()\n        elif \"|Action Timing: \" in row:\n            runtime=float(row.split(\"|Action Timing: \")[1].replace('ms','')) / 1000.0\n        elif \"|Action Exit Code: \" in row:\n            exitcode=int(row.split(\"|Action Exit Code: \")[1])\n        elif \"ActionCommandTimedOut\" in row:\n            exitcode=exitcode+1\n        row=fin.readline()\ntry:\n    tanium_add_results(';'.join([actionid,packagename,str(runtime),str(exitcode)]))\nexcept:\n    tanium_add_results('Unable to get action details')\n",
+            "script_type": "Python"
+        },
+        {
+            "platform": "Solaris",
+            "script": "#!/bin/sh\necho \"NA on Solaris\"\n",
+            "script_type": "UnixShell"
+        },
+        {
+            "platform": "AIX",
+            "script": "#!/bin/sh\necho \"NA on AIX\"\n",
+            "script_type": "UnixShell"
+        },
+        {
+            "platform": "Mac",
+            "script": "#!/bin/sh\necho \"NA on Mac\"\n",
+            "script_type": "UnixShell"
+        },
+        {
+            "platform": "Linux",
+            "script": "import os.path\nfrom os import path\nimport tanium\nimport tanium.sensor_io.sensor_input\ntanium_add_results = tanium.results.add\ninputs = tanium.sensor_io.sensor_input.SensorInputs()\ninputs.add_param('actionid', '||actionid||', None)\nactionid = inputs.get_param('actionid')\naction_dir = tanium.client.common.get_client_dir('Downloads')\n#actionid = str(\"31970\")\n#action_dir = \"/opt/Tanium/TaniumClient/Downloads\"\naction_log = action_dir + \"/Action_\" + actionid + \".log\"\nexitcode=0\nif path.exists(action_log):\n  with open(action_log, 'r') as fin:\n    row=fin.readline()\n    while row:\n        if \"|Package Name: \" in row:\n            packagename=row.split(\"|Package Name: \")[1].strip()\n        elif \"|Action Timing: \" in row:\n            runtime=float(row.split(\"|Action Timing: \")[1].replace('ms','')) / 1000.0\n        elif \"|Action Exit Code: \" in row:\n            exitcode=int(row.split(\"|Action Exit Code: \")[1])\n        elif \"ActionCommandTimedOut\" in row:\n            exitcode=exitcode+1\n        row=fin.readline()\ntry:\n    tanium_add_results(';'.join([actionid,packagename,str(runtime),str(exitcode)]))\nexcept:\n    tanium_add_results('Unable to get action details')\n",
+            "script_type": "Python"
+        }
+    ],
+    "parameter_definition": "{\"parameters\":[{\"parameterType\":\"com.tanium.components.parameters::TextInputParameter\",\"model\":\"com.tanium.components.parameters::TextInputParameter\",\"key\":\"actionid\",\"validationExpressions\":[{\"expression\":\".*\",\"helpString\":\"\",\"model\":\"com.tanium.models::ValidationExpression\",\"parameterType\":\"com.tanium.models::ValidationExpression\"}],\"promptText\":\"enter action id\",\"label\":\"action id\"}],\"model\":\"com.tanium.components.parameters::ParametersArray\",\"parameterType\":\"com.tanium.components.parameters::ParametersArray\"}",
+    "value_type": "String",
+    "max_age_seconds": 600,
+    "ignore_case_flag": true,
+    "hidden_flag": false,
+    "keep_duplicates_flag": false,
+    "delimiter": ";",
+    "subcolumns": [
+        {
+            "name": "actionid",
+            "index": 0,
+            "value_type": "Numeric",
+            "ignore_case_flag": true,
+            "hidden_flag": false
+        },
+        {
+            "name": "package name",
+            "index": 1,
+            "value_type": "String",
+            "ignore_case_flag": true,
+            "hidden_flag": false
+        },
+        {
+            "name": "runtime",
+            "index": 2,
+            "value_type": "Numeric",
+            "ignore_case_flag": true,
+            "hidden_flag": false
+        },
+        {
+            "name": "exit code",
+            "index": 3,
+            "value_type": "NumericInteger",
+            "ignore_case_flag": true,
+            "hidden_flag": false
+        }
+    ],
+    "source_id": 0
+}

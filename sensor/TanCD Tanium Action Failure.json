@@ -1,0 +1,45 @@
+{
+    "content_set": {
+        "id": 2,
+        "name": "Default"
+    },
+    "name": "TanCD Tanium Action Failure",
+    "string_count": 0,
+    "category": "TanCD",
+    "description": "Provided with an action number as a parameter, this sensor returns True or False based on Exit Code from the action from each client machine that executed the action.",
+    "queries": [
+        {
+            "platform": "Windows",
+            "script": "#!/usr/bin/python\nimport os.path\nfrom os import path\nimport tanium\nimport tanium.sensor_io.sensor_input\ntanium_add_results = tanium.results.add\ninputs = tanium.sensor_io.sensor_input.SensorInputs()\ninputs.add_param('actionid', '||actionNumber||', None)\nactionid = inputs.get_param('actionid')\ndownloads_dir = tanium.client.common.get_client_dir('Downloads')\n#sensorname = \"Chuck Norris Fact\"\n#perf_dir = \"/opt/Tanium/TaniumClient/Downloads\"\naction_log = downloads_dir + \"/Action_\" + actionid + \".log\"\nactionfailure=\"True\"\n#if path.exists(action_log):\n#  with open(action_log, 'r') as fin:\n#    row=fin.readline()\n#    while row:\n#      if \"Action Exit Code: 0\" in row:\n#        actionfailure=\"False\"\nif path.exists(action_log):\n  with open(action_log) as fp:\n    for line in fp:\n      if \"Action Exit Code: 0\" in line:\n        actionfailure=\"False\"\nelse:\n  actionfailure=\"False\"\ntanium_add_results(actionfailure)\n",
+            "script_type": "Python"
+        },
+        {
+            "platform": "Solaris",
+            "script": "#!/bin/sh\necho \"NA on Solaris\"\n",
+            "script_type": "UnixShell"
+        },
+        {
+            "platform": "AIX",
+            "script": "#!/bin/sh\necho \"NA on AIX\"\n",
+            "script_type": "UnixShell"
+        },
+        {
+            "platform": "Mac",
+            "script": "#!/bin/sh\necho \"NA on Mac\"\n",
+            "script_type": "UnixShell"
+        },
+        {
+            "platform": "Linux",
+            "script": "#!/bin/bash\nexport sensor_name=\"TanCD Tanium Action Failure\"\n[ -f /opt/Tanium/TaniumClient/perf/perf.sh ] && . /opt/Tanium/TaniumClient/perf/perf.sh\n#@INCLUDE=i18n/UTF8Decode.sh\n#@START_INCLUDES_HERE\n#------------ INCLUDES START - Do not edit between this line and INCLUDE ENDS -----\n#- Begin file: utils/settings/get_client_dir.sh\n# To include this file, copy/paste: INCLUDE=utils/settings/get_client_dir.sh\nget_client_dir() {\n\tif [ -n  \"$TANIUM_CLIENT_ROOT\" ]; then\n\t\techo \"$TANIUM_CLIENT_ROOT/\"\n\telif [ -f \"./TaniumClient\" ] && [ -x \"./TaniumClient\" ]; then\n\t\t\techo \"./\"\n\telif [ -f \"../../TaniumClient\" ] && [ -x \"../../TaniumClient\" ]; then\n\t\techo \"../../\"\n\telse\n\t\tOS=$(uname)\n\t\t\n\t\tif [ \"$OS\" = \"Darwin\" ]; then\n\t\t\tBASE=/Library\n\t\telse\n\t\t\tBASE=/opt\n\t\tfi\n\t\t\n\t\tif [ -f \"$BASE/Tanium/TaniumClient/TaniumClient\" ] && [ -x \"$BASE/Tanium/TaniumClient/TaniumClient\" ]; then\n\t\t\techo \"$BASE/Tanium/TaniumClient/\"\n\t\telse\n\t\t\techo \"Can not find Tanium Client directory\"\n\t\t\texit 1\n\t\tfi\n\tfi\n}\n#- End file: utils/settings/get_client_dir.sh\n#- Begin file: i18n/UTF8Decode.sh\n# To include this file, copy/paste: INCLUDE=i18n/UTF8Decode.sh\nutf8decode() {\n\t# if we have the Tanium Python Engine available, then use it to convert the parameter\n\tTPYTHON_PATH=\"$(get_client_dir)python27/python\"\n\tif [ -f \"$TPYTHON_PATH\" ]; then\n\t\t$TPYTHON_PATH -c \"from tanium import util; print util.unescape('$1').encode('utf-8')\"\n\telse\n\t\t# No python, resort to old style that we know works everywhere, but only decodes a fixed set\n\t\t# decode everything between 0x20-0x7E except:\n\t\t#0 1 2 3 4 5 6 7 8 9 (0x30-0x39)\n\t\t#A B C D E F G H I J K L M N O P Q R S T U V W X Y Z (0x41-0x5A)\n\t\t#a b c d e f g h i j k l m n o p q r s t u v w x y z (0x61-0x7A)\n\t\techo \"$1\" | sed -e 's/%20/ /g' \\\n\t\t-e 's/%21/!/g' \\\n\t\t-e 's/%22/\"/g' \\\n\t\t-e 's/%23/#/g' \\\n\t\t-e 's/%24/$/g' \\\n\t\t-e 's/%25/%/g' \\\n\t\t-e 's/%26/\\&/g' \\\n\t\t-e \"s/%27/'/g\" \\\n\t\t-e 's/%28/(/g' \\\n\t\t-e 's/%29/)/g' \\\n\t\t-e 's/%2[aA]/*/g' \\\n\t\t-e 's/%2[bB]/+/g' \\\n\t\t-e 's/%2[cC]/,/g' \\\n\t\t-e 's/%2[dD]/-/g' \\\n\t\t-e 's/%2[eE]/./g' \\\n\t\t-e 's#%2[fF]#/#g' \\\n\t\t-e 's/%3[aA]/:/g' \\\n\t\t-e 's/%3[bB]/;/g' \\\n\t\t-e 's/%3[cC]/</g' \\\n\t\t-e 's/%3[dD]/=/g' \\\n\t\t-e 's/%3[eE]/>/g' \\\n\t\t-e 's/%3[fF]/?/g' \\\n\t\t-e 's/%40/@/g' \\\n\t\t-e 's/%5[bB]/[/g' \\\n\t\t-e 's/%5[cC]/\\\\/g' \\\n\t\t-e 's/%5[dD]/]/g' \\\n\t\t-e 's/%5[eE]/^/g' \\\n\t\t-e 's/%5[fF]/_/g' \\\n\t\t-e 's/%60/`/g' \\\n\t\t-e 's/%7[bB]/{/g' \\\n\t\t-e 's/%7[cC]/|/g' \\\n\t\t-e 's/%7[dD]/}/g' \\\n\t\t-e 's/%7[eE]/~/g'\n\tfi\n}\n#- End file: i18n/UTF8Decode.sh\n#------------ INCLUDES END - Do not edit above this line and INCLUDE STARTS -----\nACTIONID=$(utf8decode \"||actionNumber||\")\nif [ -r \"Downloads/Action_$ACTIONID.log\" ]\nthen\n\t##\n    # if the action exit code is not zero, then assume failure...\n    if [ \"$(grep -c \"Action Exit Code: 0\" \"Downloads/Action_$ACTIONID.log\")\" -eq 0 ]\n    then\n    \tif [ \"$(grep -c \"Action Exit Code\" \"Downloads/Action_$ACTIONID.log\")\" -gt 0 ]\n        then\n\t    \techo \"True\"\n        else\n        \tif [ \"$(grep -c \"ActionCommandTimedOut\" \"Downloads/Action_$ACTIONID.log\")\" -gt 0 ]\n            then\n            \techo \"True\"\n            else\n        \t\techo \"False\"\n            fi\n        fi\n    else\n    \techo \"False\"\n    fi\nfi\n",
+            "script_type": "UnixShell"
+        }
+    ],
+    "parameter_definition": "{\"parameters\":[{\"parameterType\":\"com.tanium.components.parameters::NumericParameter\",\"model\":\"com.tanium.components.parameters::NumericParameter\",\"key\":\"actionNumber\",\"label\":\"Action ID\"}],\"model\":\"com.tanium.components.parameters::ParametersArray\",\"parameterType\":\"com.tanium.components.parameters::ParametersArray\"}",
+    "value_type": "String",
+    "max_age_seconds": 900,
+    "ignore_case_flag": true,
+    "hidden_flag": false,
+    "keep_duplicates_flag": false,
+    "delimiter": ",",
+    "source_id": 0
+}

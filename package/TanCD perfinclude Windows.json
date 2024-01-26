@@ -1,0 +1,40 @@
+{
+    "content_set": {
+        "id": 2,
+        "name": "Default"
+    },
+    "name": "TanCD perfinclude Windows",
+    "display_name": "TanCD perfinclude Windows",
+    "command": "cmd /c powershell.exe -file .\\install.ps1",
+    "command_timeout": 60,
+    "expire_seconds": 660,
+    "verify_expire_seconds": 600,
+    "skip_lock_flag": false,
+    "hidden_flag": false,
+    "process_group_flag": true,
+    "deleted_flag": false,
+    "source_hash": "1793a63f70098815bb72901095dcadc37880c0f15fa24d479ae4ac708f40d9f3",
+    "verify_group_id": 0,
+    "verify_group": {
+        "id": 0
+    },
+    "parameter_definition": "{\"parameters\":[],\"model\":\"com.tanium.components.parameters::ParametersArray\",\"parameterType\":\"com.tanium.components.parameters::ParametersArray\"}",
+    "source_id": 0,
+    "files": [
+        {
+            "name": "perf_log_rotate.ps1",
+            "source": "",
+            "download_seconds": 0
+        },
+        {
+            "name": "perfinclude.ps1",
+            "source": "",
+            "download_seconds": 0
+        },
+        {
+            "name": "install.ps1",
+            "source": "",
+            "download_seconds": 0
+        }
+    ]
+}
