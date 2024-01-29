@@ -187,8 +187,8 @@ def main(argv):
         "selects": [
             {
                 "sensor": {
-                    "name": "MGC Tanium Action Output",
-                    "source_hash": tan.get_sensor_hash("MGC Tanium Action Output"),
+                    "name": "TanCD Tanium Action Output",
+                    "source_hash": tan.get_sensor_hash("TanCD Tanium Action Output"),
                     "parameters": [
                         {
                             "key": "||actionNumber||",
@@ -204,8 +204,8 @@ def main(argv):
         "selects": [
             {
                 "sensor": {
-                    "name": "MGC Package Performance",
-                    "source_hash": tan.get_sensor_hash("MGC Package Performance"),
+                    "name": "TanCD Package Performance",
+                    "source_hash": tan.get_sensor_hash("TanCD Package Performance"),
                     "parameters": [
                         {
                             "key": "||actionid||",
