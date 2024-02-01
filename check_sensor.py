@@ -121,8 +121,8 @@ def main(argv):
             prefixtest=True
     
     if not prefixtest:
-        failmessage+="\n\nTo avoid confusion betwen Siemens DISW developed content and Tanium provided content, please prefix the content category with '"
-        failmessage+=config.get('sensor','category_prefix') + "'"
+        failmessage+="\n\nTo avoid confusion betwen locally developed content and Tanium provided content, please prefix the content category with '"
+        failmessage+=config.get('prefix','category') + "'"
         failurecount+=1
 
     prefixtest=False
@@ -131,7 +131,7 @@ def main(argv):
             prefixtest=True
 
     if not prefixtest:
-        failmessage+="\n\nTo avoid confusion betwen Siemens DISW developed content and Tanium provided content, please prefix the name with '"
+        failmessage+="\n\nTo avoid confusion betwen locally developed content and Tanium provided content, please prefix the name with '"
         failmessage+=config.get('prefix','name') + "'"
         failurecount+=1
 
