@@ -48,6 +48,7 @@ class server():
 		self.quiet = quiet
 		self.question_complete_percent = 0.97
 		self.action_complete_percent = 0.8
+		self.action_result_wait_time_s = 5
 		self.creds = creds
 		self.keepcreds = keepcreds
 		self.server = str(creds['server']) if creds['server'][-1] == '/' else str(creds['server'] + '/')
@@ -56,7 +57,7 @@ class server():
 		atexit.register(self.logout)
 		self.saved = [i['id'] for i in self.req('get', 'saved_questions')['data'] if 'id' in i]
 		##
-		# disable warnings after the first requests to ensure it gets displayed at least once 
+		# disable warnings after the first requests to ensure it gets displayed at least once
 		# before being supressed.
 		requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
@@ -183,7 +184,7 @@ class server():
 
 	def create_package(self, package):
 		return self.req('POST', 'packages/', package)
-		
+
 	def get_sensor(self, sensorname):
 		#self.validate_session()
 		#sensor = Request('GET', self.server + 'sensors/by-name/' + sensorname)
@@ -231,14 +232,14 @@ class server():
 	def req(self, type, endpoint, data={}):
 		if not self.validate_session():
 			return False
-			
+
 		if type == 'PATCH':
-			r = Request(type, self.server + endpoint, data=json.dumps(data), headers={'session':self.session_id}).prepare()			
+			r = Request(type, self.server + endpoint, data=json.dumps(data), headers={'session':self.session_id}).prepare()
 		else:
 			r = Request(type, self.server + endpoint, json=data, headers={'session':self.session_id}).prepare()
 
 		resp = self.s.send(r, verify=False)
-		
+
 		if resp.status_code == 200:
 			return resp.json()
 		else:
@@ -292,6 +293,9 @@ class server():
 			pp(action)
 
 		if get_results:
+			# Wait a moment to give Tanium time to run the action
+			# if not the result data endpoint will not return any rows
+			time.sleep(self.action_result_wait_time_s)
 			if not self.quiet:
 				print("waiting for action id " + str(action_id) + " to " + str(self.action_complete_percent) + " complete.")
 			result_info = self.get_action_results(action_id)
@@ -307,18 +311,50 @@ class server():
 		action = self.req('GET', 'saved_actions/' + str(action_id))["data"]
 		return action
 
-	def get_action_results(self,action_id):
+	def get_action_results(self, action_id):
 		action = self.req('GET', 'actions/' + str(action_id))["data"]
 		expiration_time = parser.parse(action["expiration_time"])
-		results = self.req('GET', 'result_info/action/' + str(action_id))["data"]
-		result_info = results["result_infos"][0]
-		while result_info['row_count_machines'] < (result_info['estimated_total'] * self.action_complete_percent) and datetime.now(timezone.utc).timestamp() < expiration_time.timestamp():
+
+		while datetime.now(timezone.utc).timestamp() < expiration_time.timestamp():
+			# Only result_data endpoint contains the Action Statuses column
+			results = self.req('GET', 'result_data/action/' + str(action_id))["data"]
+			result_set = results["result_sets"][0]
+
+			# Find the index of Action Statuses column
+			status_column_index = None
+			for index, column in enumerate(result_set["columns"]):
+				if column["name"] == "Action Statuses":
+					status_column_index = index
+					break
+
+			if status_column_index is None:
+				raise ValueError("Could not find 'Action Statuses' column in the result set")
+
+			# Get total row count
+			total_rows = result_set["row_count"]
+
+			# Count completed actions
+			completed_count = 0
+			for row in result_set["rows"]:
+				action_status = row["data"][status_column_index][0]["text"]
+				if ":Completed" in action_status:
+					completed_count += 1
+
+			# Check if we've reached the desired completion percentage
+			if completed_count >= (total_rows * self.action_complete_percent):
+				return result_set
+
 			if not self.quiet:
-				print("Polling, {}/{}. Action expires in {} seconds.".format(result_info['row_count_machines'],result_info['estimated_total'], (expiration_time - datetime.now(timezone.utc)).seconds ))
+				print("Polling, {}/{} completed. Action expires in {} seconds.".format(
+					completed_count,
+					total_rows,
+					(expiration_time - datetime.now(timezone.utc)).seconds
+				))
+
 			time.sleep(5)
-			results = self.req('GET', 'result_info/action/' + str(action_id))["data"]
-			result_info = results["result_infos"][0]
-		return result_info
+
+		# Return the last result set if we exit due to expiration
+		return result_set
 
 	def parse_action_outputs(self,outputs):
 		actionout = {}
@@ -353,7 +389,7 @@ class server():
 						logs[int(index)]=self.escape_ansi(actionout[md5][index])
 					except:
 						print("error adding logentry to message.")
-			
+
 			for log in logs:
 				if log != None:
 					messages.append(log)
@@ -393,9 +429,9 @@ class server():
 						'value': 'True',
 						'value_type': 'String',
 						'ignore_case_flag': True,
-					}				
+					}
 				]
-			}		
+			}
 		}
 		qid = self.ask_question(outputquestion)
 		outputs = self.get_question_results(qid)
@@ -438,9 +474,9 @@ class server():
 						'value': 'True',
 						'value_type': 'String',
 						'ignore_case_flag': True,
-					}				
+					}
 				]
-			}		
+			}
 		}
 		qid = self.ask_question(failedcomputersquestion)
 		outputs = self.get_question_results(qid)
@@ -490,9 +526,9 @@ class server():
 						'value': 'True',
 						'value_type': 'String',
 						'ignore_case_flag': True,
-					}				
+					}
 				]
-			}		
+			}
 		}
 		qid = self.ask_question(failurequestion)
 		results = self.get_question_results(qid)
@@ -528,7 +564,7 @@ class server():
 		if self.debug:
 			print("get_action_output question results: ")
 			pp(oututs)
-			
+
 		actionout = {}
 		for output in outputs["result_sets"]:
 			for row in output["rows"]:
@@ -565,7 +601,7 @@ class server():
 						logs[int(index)]=escape_ansi(actionout[md5][index])
 					except:
 						print("error adding logentry to message.")
-			
+
 			packageoutput += '<ul>'
 			for log in logs:
 				if log != None:
@@ -583,7 +619,7 @@ class server():
 	    }
 		for sensor in sensors:
 			question["selects"].append({"sensor": { "name": sensor}})
-		
+
 		return self.ask_question(question)
 
 	def parse_question(self,question_text):
@@ -623,7 +659,7 @@ class server():
 				output+="\n</tr>\n"
 		output+="\n</table>\n<br>\n\n"
 		return output
-	
+
 	def get_question_results(self, qid):
 		# Poll the result info metadata until 99% of endpoints have responded, then pull results.
 		if qid in self.saved:
