@@ -315,11 +315,11 @@ class server():
 		action = self.req('GET', 'actions/' + str(action_id))["data"]
 		expiration_time = parser.parse(action["expiration_time"])
 
-		while datetime.now(timezone.utc).timestamp() < expiration_time.timestamp():
-			# Only result_data endpoint contains the Action Statuses column
-			results = self.req('GET', 'result_data/action/' + str(action_id))["data"]
-			result_set = results["result_sets"][0]
+		# Get initial results outside the loop
+		results = self.req('GET', 'result_data/action/' + str(action_id))["data"]
+		result_set = results["result_sets"][0]
 
+		while datetime.now(timezone.utc).timestamp() < expiration_time.timestamp():
 			# Find the index of Action Statuses column
 			status_column_index = None
 			for index, column in enumerate(result_set["columns"]):
@@ -352,6 +352,10 @@ class server():
 				))
 
 			time.sleep(5)
+
+			# Get fresh results for next iteration
+			results = self.req('GET', 'result_data/action/' + str(action_id))["data"]
+			result_set = results["result_sets"][0]
 
 		# Return the last result set if we exit due to expiration
 		return result_set
