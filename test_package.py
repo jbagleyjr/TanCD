@@ -107,13 +107,13 @@ def main(argv):
     #tan.quiet = True
     #qid = tan.ask_question(question)
     if package["command"][0:4] == "/bin":
-        action_group = "all linux"
+        action_group = "GTI Linux"
     elif package["command"][0:3] == "cmd":
-        action_group = "all windows"
+        action_group = "GTI-Windows"
     elif "linux" in packagename.lower():
-        action_group = "all linux"
+        action_group = "GTI Linux"
     elif "windows" in packagename.lower():
-        action_group = "all windows"
+        action_group = "GTI-Windows"
     else:
         action_group = "All Computers"
         # failmessage+="\n\n\nUnable to determine action group (Windows|Linux) to execute package on."
